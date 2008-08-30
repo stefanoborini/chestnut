@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="urn:uuid:d195be0c-200a-40a4-9d05-35fdf42eb29f" version="1.0.0">
+    <Meta>
+        <DefaultExecutableGroupEntryPoint>standard_type</DefaultExecutableGroupEntryPoint>
+    </Meta>
+    <Contents>
+        <ExecutableGroup entryPoint="package_relative_type">
+            <Executable>
+                <Platform>Linux-ia64</Platform>
+                <Path type="package_relative">FrobnizBaz/package_relative_Linux-ia64</Path>
+            </Executable>
+            <Executable>
+                <Platform>noarch</Platform>
+                <Path type="package_relative">FrobnizBaz/package_relative_noarch</Path>
+            </Executable>
+            <Executable>
+                <Platform>Darwin-i386</Platform>
+                <Path type="package_relative">FrobnizBaz/package_relative_Darwin-i386</Path>
+            </Executable>
+            <Executable>
+                <Platform>Darwin-Power Macintosh</Platform>
+                <Path type="package_relative">FrobnizBaz/package_relative_Darwin-Power Macintosh</Path>
+            </Executable>
+        </ExecutableGroup>
+        <ExecutableGroup entryPoint="standard_type">
+            <Executable>
+                <Platform>noarch</Platform>
+                <Path type="standard">standard_type</Path>
+            </Executable>
+            <Executable>
+                <Platform>Darwin-i386</Platform>
+                <Path type="standard">standard_type</Path>
+            </Executable>
+            <Executable>
+                <Platform>Linux-ia64</Platform>
+                <Path type="standard">standard_type</Path>
+            </Executable>
+            <Executable>
+                <Platform>Darwin-Power Macintosh</Platform>
+                <Path type="standard">standard_type</Path>
+            </Executable>
+        </ExecutableGroup>
+        <ExecutableGroup entryPoint="absolute_type">
+            <Executable>
+                <Platform>noarch</Platform>
+                <Path type="absolute">/bin/ls</Path>
+            </Executable>
+        </ExecutableGroup>
+        <ResourceGroup entryPoint="res_1">
+            <Resource>
+                <Platform>Linux-ia64</Platform>
+                <Path type="package_relative">Bruble/something</Path>
+            </Resource>
+            <Resource>
+                <Platform>Darwin-ia64</Platform>
+                <Path type="package_relative">Bruble/something</Path>
+            </Resource>
+            <Resource>
+                <Platform>Darwin-Power Macintosh</Platform>
+                <Path type="package_relative">Bruble/something</Path>
+            </Resource>
+            <Resource>
+                <Platform>noarch</Platform>
+                <Path type="package_relative">Bruble/something</Path>
+            </Resource>
+        </ResourceGroup>
+        <ResourceGroup entryPoint="res_2">
+            <Resource>
+                <Platform>Linux-ia64</Platform>
+                <Path type="standard">something</Path>
+            </Resource>
+            <Resource>
+                <Platform>Darwin-i386</Platform>
+                <Path type="standard">something</Path>
+            </Resource>
+            <Resource>
+                <Platform>Darwin-Power Macintosh</Platform>
+                <Path type="standard">something</Path>
+            </Resource>
+            <Resource>
+                <Platform>noarch</Platform>
+                <Path type="standard">something</Path>
+            </Resource>
+        </ResourceGroup>
+    </Contents>
+</Package>

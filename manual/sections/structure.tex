@@ -1,0 +1,21 @@
+\section{Structure}
+
+Chestnut Package manager is composed of the following programs:
+\begin{itemize}
+\item \textbf{cnrun}: runs a package
+\item \textbf{cnpath}: gives the absolute path of a resource or executable contained into a
+package
+\item \textbf{cnls}: gives a list of all the packages found, or print
+more detailed informations about a specific package.
+\end{itemize}
+
+Packages are special directories with a special content. A tutorial on how
+to create and setup your own package will be provided as additional technical
+information, but it is not in the scope of the present document.
+
+Packages are stored in a shared repository. The advantage of a package is
+that it describes itself, it is relocatable, and promotes self-contained
+programs. In general, packages repositories are one or more directories we
+designate as such, plus a personal repository in your home directory. If you
+declare some of your personal packages stable enough, in order to make them
+available to the others is sufficient to copy them in the shared repository.

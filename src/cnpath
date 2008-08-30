@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+# @description Resolves the absolute path of an executable or resource
+# @author Stefano Borini 
+
+import sys
+import os
+
+script_path=os.path.abspath(sys.path[0]); sys.path.append(os.path.abspath(os.path.join(script_path, "../lib/python")));
+
+from Chestnut import PackageResolver
+
+
+def usage():
+    print "Chestnut Package Manager"
+    print "By Stefano Borini"
+    print ""
+    print "Usage: "+os.path.basename(sys.argv[0])+" PackageName[-version][/entryPoint]"
+    print ""
+    print "Returns the absolute path of a resource contained into a package."
+    print "Examples:"
+    print os.path.basename(sys.argv[0])+" PackageName/entryPoint"
+    print os.path.basename(sys.argv[0])+" PackageName-1.0.0/entryPoint"
+
+
+class ResourceAbsolutePathGetter:
+    def __init__(self):
+        pass
+    def get(self, name):
+        if "/" in name:
+            # this is an attempt. It could just be a relative or absolute path
+            package_versioned_name, entry_point = name.split("/", 1)
+        else:
+            package_versioned_name = name
+            entry_point = None
+
+        parts = package_versioned_name.split("-",1)
+        if len(parts) == 2:
+            package_name, version_string = parts
+        else:
+            package_name = parts[0]
+            version_string = None
+        
+        if version_string is not None:
+            version = version_string.split(".")
+        else:
+            version = ()
+
+        resolver = PackageResolver.PackageResolver()
+        package = resolver.find(package_name, version)
+
+        if package is not None:
+            path = package.resourceAbsolutePath(entry_point)
+        else:
+            sys.exit(1)
+        if path is None:
+            sys.exit(1)
+
+        print path
+        sys.exit(0)
+
+if len(sys.argv) < 2:
+    usage()
+    sys.exit(0)
+
+if __name__ == "__main__":
+    getter=ResourceAbsolutePathGetter()
+    getter.get(sys.argv[1])

@@ -1,0 +1,136 @@
+\section{Details of a package}
+
+\subsection{The package directory}
+
+We define Package (version 1.0) a directory with the following characteristics
+
+\begin{itemize}
+\item it has the .package extension
+\item removed the extension, it has a specific name in the form package\_name-version\_major.version\_minor.patch\_level (ex : foo-1.0.0)
+\item it contains an xml file called manifest.xml
+\item it optionally contains subdirs to host executables, resources and other.
+\end{itemize}
+
+We also defined the following nomenclature:
+\begin{itemize}
+\item an \kw{executable} is a binary or script that can be executed on a given platform, as defined by `uname`-`uname -m`
+\item a \kw{resource} is a file that is meaningful on a given platform, as defined as before
+\item an \kw{executable group} is a collection of platform-dependent executables. The executable group can be referred by means of a single, unique label (\kw{entry point}).
+\item an \kw{resource group} is a collection of platform-dependent resources. The resource group can be referred by a single, unique label (entry point).
+\end{itemize}
+
+\subsection{The manifest}
+
+the manifest.xml is an xml file describing the package. It says which
+executables and resources are contained in the package, and their paths.
+Different entry\_points are assigned to each executable and resource groups.
+
+In a meta section, it is possible to define a default entry\_point that
+represents the package. If a default entry point is defined, the package itself
+is said to be runnable. The entry point must refer to an executable group.
+entry points must be unique within a package.
+
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="urn:uuid:d195be0c-200a-40a4-9d05-35fdf42eb29f" version="1.0.0">
+    <Meta>
+        <DefaultExecutableGroupEntryPoint>defaultExecutable</DefaultExecutableGroupEntryPoint>
+        <Description>Package description</Description>
+    </Meta>
+    <Contents>
+        <ExecutableGroup entryPoint="defaultExecutable">
+            <Executable>
+                <Platform>noarch</Platform>
+                <Interpreter>bash</Interpreter>
+                <Path type="standard">defaultExecutable</Path>
+            </Executable>
+        </ExecutableGroup>
+        <ExecutableGroup entryPoint="secondaryExecutable">
+            <Executable>
+                <Platform>noarch</Platform>
+                <Interpreter>python</Interpreter>
+                <Path type="standard">secondaryExecutable</Path>
+            </Executable>
+        </ExecutableGroup>
+        <ResourceGroup entryPoint="resource1">
+            <Resource>
+                <Platform>Linux-ia64</Platform>
+                <Path type="standard">resource1</Path>
+            </Resource>
+        </ResourceGroup>
+        <ResourceGroup entryPoint="resource2" description="a description">
+            <Resource>
+                <Platform>noarch</Platform>
+                <Path type="standard">resource2</Path>
+            </Resource>
+        </ResourceGroup>
+    </Contents>
+</Package>
+\end{verbatim}
+
+The namespace is the uuid \verb+d195be0c-200a-40a4-9d05-35fdf42eb29f+. It has
+been generated randomly.  
+
+The Meta section (optional) contains the
+DefaultExecutableGroupEntryPoint (optional) for the package. The entry point name
+specified as default entry point must also be defined for an executable group,
+otherwise the package manifest is not correct, and the package is not a
+package. It can also contain a free-text Description (optional) for the package.
+
+The Contents section (mandatory) describes the actual contents of the package. There are two
+possible subelements to the Content element: ExecutableGroup and ResourceGroup.
+both of them have a single mandatory attribute which is the entry point name, a
+unique name identifying it. If some entry point is not specified, the entry is
+considered corrupted and therefore discarded.
+
+The ExecutableGroup element contains Executable elements, one for each platform.
+This way it is possible to have multiple architectures into the same package,
+and the correct one will be ran. The Path element has a single attribute
+"type", which can be one of the following:
+\begin{itemize}
+\item standard: means that the path is relative to the package subdirectory "Executables/platform\_string" (ie: Executables/Linux-ia64)
+\item package\_relative: means that the path is relative to the root of the package.
+\item absolute: means that the path is an absolute path from the beginning of
+      the filesystem. Useful to define "interface" packages to see as packages 
+      applications that already reside on the disk somewhere and cannot be moved or packaged.
+\end{itemize}
+
+At the same way, ResourceGroup contain Resource elements, each one specific for a given platform.
+
+\subsection{Package layout}
+
+Executables are normally stored into "Executables/platform/". Resource are normally stored into "Resources/platform/".
+There is no standardization for anything else, however in general you should use "Libraries/platform/language" for internal libraries,
+and "Documentation" for documentation.
+
+\subsection{Programs}
+
+An executable called cnrun must be reachable in the PATH variable. When
+invoked with the package name, the variable PACKAGE\_SEARCH\_PATH is walked in
+a similar way to PATH to find the package.  If the package is found and is
+runnable, the executable is executed. When executed, the variable
+PACKAGE\_ROOT\_DIR is defined, containing the absolute path to the package root
+directory.  It is possible to specify a different entry point as
+"Package-1.0.0/entry\_point".
+
+cnrun always tries to run the platform specific executable if available. If
+this fails, it falls back to a noarch version if available.
+
+A similar executable, called cnpath, gets the resource absolute path out of the
+package and resource entry point.  Like before, the entry point is specified
+with a slash (for example cnpath package-1.0.0/resourcename)
+
+It is also possible to specify a package without the version: in this case, the
+most recent version will be chosen by pure numeric criterium.  For example. having the following packages in our search path
+\begin{verbatim}
+foo-1.0.0
+foo-1.0.1
+foo-1.1.0
+foo-1.2.0
+foo-2.1.0
+\end{verbatim}
+
+calling cnrun foo will run foo-2.1.0; Calling cnrun foo-1 will run
+foo-1.2.0; Calling cnrun foo-1.0 will run foo-1.0.1
+
+The executable cnls produces a list of all the packages found while scouting the search path.

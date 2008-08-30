@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+# @author Stefano Borini
+
+import os; import sys; script_path=sys.path[0]; sys.path.append(os.path.join(script_path, "../src")); 
+import unittest
+
+import TestExecutable
+import TestExecutableGroup
+import TestManifest
+import TestPackageResolver
+import TestPlatform
+import TestResource
+import TestResourceGroup
+import TestPackage
+import TestPathType
+
+
+all_test_suite=unittest.TestSuite()
+
+for test_case_class in [
+                TestExecutable.TestExecutable,
+                TestExecutableGroup.TestExecutableGroup,
+                TestManifest.TestManifest,
+                TestPackageResolver.TestPackageResolver,
+                TestPlatform.TestPlatform,
+                TestResource.TestResource,
+                TestResourceGroup.TestResourceGroup,
+                TestPackage.TestPackage,
+                TestPathType.TestPathType,
+                ]:
+    all_test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(test_case_class))
+
+unittest.TextTestRunner().run(all_test_suite)
+
+
+    
