@@ -1,0 +1,10 @@
+# translations for platform Darwin-Power Macintosh
+# This is apparently unusual, as this is a plain text file. 
+# However, if you have binary files, they could happen to have
+# endianness issues or platform specific optimizations, which 
+# make them unportable to another platform
+it:ciao (on Darwin-Power Macintosh)
+en:hello (on Darwin-Power Macintosh)
+es:hola (on Darwin-Power Macintosh)
+de:hallo (on Darwin-Power Macintosh)
+fr:salut (on Darwin-Power Macintosh)
