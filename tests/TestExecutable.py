@@ -4,6 +4,7 @@ import os; import sys; script_path=sys.path[0]; sys.path.append(os.path.join(scr
 import unittest
 from Chestnut import Executable
 from Chestnut import PathType
+from Chestnut import DependencyType
 
 class TestExecutable(unittest.TestCase):
     def testInitialization(self):
@@ -37,6 +38,13 @@ class TestExecutable(unittest.TestCase):
         executable = Executable.Executable()
         executable.setInterpreter("foo")
         self.assertEqual(executable.interpreter(), "foo")
+
+    def testDependencies(self):
+        executable = Executable.Executable()
+        executable.addDependency(DependencyType.PACKAGED_EXECUTABLE, "foo-1.2/bar")
+        executable.addDependency(DependencyType.PACKAGED_RESOURCE, "foo-1.2/baz")
+       
+        self.assertEqual(len(executable.getDependencies()), 2)
 
 
 if __name__ == '__main__':

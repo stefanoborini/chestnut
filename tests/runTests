@@ -13,6 +13,7 @@ import TestResource
 import TestResourceGroup
 import TestPackage
 import TestPathType
+import TestDependencyType
 
 
 all_test_suite=unittest.TestSuite()
@@ -27,6 +28,7 @@ for test_case_class in [
                 TestResourceGroup.TestResourceGroup,
                 TestPackage.TestPackage,
                 TestPathType.TestPathType,
+                TestDependencyType.TestDependencyType,
                 ]:
     all_test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(test_case_class))
 
