@@ -12,88 +12,90 @@ from Chestnut import Executable
 
 
 class TestManifest(unittest.TestCase):
-    def testInitialization(self):
+    def testInitialization(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         self.assertEqual(manifest.__class__, Manifest.Manifest)
-
-    def testInvalidManifestNoContents(self):
+        # <<fold
+    def testInvalidManifestNoContents(self): # fold>>
         self.assertRaises( Manifest.ParseException, Manifest.Manifest, os.path.join(sys.path[0],"invalidManifests","no_contents.xml"))
-
-    def testInvalidManifestTooManyContents(self):
+        # <<fold
+    def testInvalidManifestTooManyContents(self): # fold>>
         self.assertRaises( Manifest.ParseException, Manifest.Manifest, os.path.join(sys.path[0],"invalidManifests","many_contents.xml"))
-
-    def testInvalidManifestTooManyMeta(self):
+        # <<fold
+    def testInvalidManifestTooManyMeta(self): # fold>>
         self.assertRaises( Manifest.ParseException, Manifest.Manifest, os.path.join(sys.path[0],"invalidManifests","many_meta.xml"))
-
-    def testInvalidManifestMissingDefaultEntryPoint(self):
+        # <<fold
+    def testInvalidManifestMissingDefaultEntryPoint(self): # fold>>
         self.assertRaises( Manifest.ParseException, Manifest.Manifest, os.path.join(sys.path[0],"invalidManifests","unexistent_default.xml"))
-
-    def testInvalidManifestNonUniqueEntryPoints(self):
+        # <<fold
+    def testInvalidManifestNonUniqueEntryPoints(self): # fold>>
         self.assertRaises( Manifest.ParseException, Manifest.Manifest, os.path.join(sys.path[0],"invalidManifests","non_unique_entry_points.xml"))
-
-    def testInvalidManifestUnexistentDefaultEntryPoint(self):
+        # <<fold
+    def testInvalidManifestUnexistentDefaultEntryPoint(self): # fold>>
         self.assertRaises( Manifest.ParseException, Manifest.Manifest, os.path.join(sys.path[0],"invalidManifests","unexistent_default.xml"))
-
-    def testInvalidManifestUnsupportedVersion(self):
+        # <<fold
+    def testInvalidManifestUnsupportedVersion(self): # fold>>
         self.assertRaises( Manifest.ParseException, Manifest.Manifest, os.path.join(sys.path[0],"invalidManifests","unsupported_version.xml"))
-
-    def testDefaultExecutableGroupEntryPoint(self):
+        # <<fold
+    def testDefaultExecutableGroupEntryPoint(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         self.assertEqual(manifest.defaultExecutableGroupEntryPoint(), "hello")
-
-    def testMetaSectionWithNoDefaultExecGroup(self):
+        # <<fold
+    def testMetaSectionWithNoDefaultExecGroup(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest_only_description_in_meta.xml"))
         self.assertEqual(manifest.__class__, Manifest.Manifest)
         self.assertEqual(manifest.defaultExecutableGroupEntryPoint(), None)
-
-    def testExecutableGroupList(self):
+        # <<fold
+    def testExecutableGroupList(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         self.assertEqual(len(manifest.executableGroupList()), 3)
-
-    def testResourceGroupList(self):
+        # <<fold
+    def testResourceGroupList(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         self.assertEqual(len(manifest.resourceGroupList()), 2)
-
-    def testExecutableGroup(self):
+        # <<fold
+    def testExecutableGroup(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         self.assertEqual(manifest.executableGroup("eles").__class__, ExecutableGroup.ExecutableGroup)
         self.assertEqual(manifest.executableGroup("frobniz"), None)
-
-    def testExecutableGroupDescription(self):
+        # <<fold
+    def testExecutableGroupDescription(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         self.assertEqual(manifest.executableGroup("eles").description(), "ls executable")
         self.assertEqual(manifest.executableGroup("hello").description(), None)
-
-    def testResourceGroup(self):
+        # <<fold
+    def testResourceGroup(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         self.assertEqual(manifest.resourceGroup("res_2").__class__, ResourceGroup.ResourceGroup)
         self.assertEqual(manifest.resourceGroup("frobniz"), None)
-
-    def testResourceGroupDescription(self):
+        # <<fold
+    def testResourceGroupDescription(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         self.assertEqual(manifest.resourceGroup("res_2").description(), "resource 2")
         self.assertEqual(manifest.resourceGroup("res_1").description(), None)
-
-    def testExecutable(self):
+        # <<fold
+    def testExecutable(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         self.assertEqual(manifest.executable("eles", "Darwin-i386").__class__, Executable.Executable)
         self.assertEqual(manifest.executable("eles", "NCC-1701"), None)
         self.assertEqual(manifest.executable("frobniz", "NCC-1701"), None)
-
-    def testResource(self):
+        # <<fold
+    def testResource(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         self.assertEqual(manifest.resource("res_2","Linux-ia64").__class__, Resource.Resource)
         self.assertEqual(manifest.resource("res_2","NCC-1701"), None)
         self.assertEqual(manifest.resource("frobniz","NCC-1701"), None)
-    def testPackageDescription(self):
+        # <<fold
+
+    def testPackageDescription(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         self.assertEqual(manifest.packageDescription(), "a cool manifest for a cool package")
-
-    def testEmptyPackageDescription(self):
+        # <<fold
+    def testEmptyPackageDescription(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest_no_package_description.xml"))
         self.assertEqual(manifest.packageDescription(), None)
-        
-    def testParseExecutableGroupNode(self):
+            # <<fold 
+    def testParseExecutableGroupNode(self): # fold>>
         manifest_doc = minidom.parse(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         
         root = manifest_doc.documentElement
@@ -114,8 +116,8 @@ class TestManifest(unittest.TestCase):
         self.assertEqual(exe_group.__class__, ExecutableGroup.ExecutableGroup)
         self.assertEqual(exe_group.entryPoint(), "eles")
         self.assertEqual(len(exe_group.executableList()), 2)
-
-    def testParseResourceGroupNode(self):
+        # <<fold
+    def testParseResourceGroupNode(self): # fold>>
         manifest_doc = minidom.parse(os.path.join(sys.path[0],"validManifests","manifest.xml"))
         
         root = manifest_doc.documentElement
@@ -131,6 +133,6 @@ class TestManifest(unittest.TestCase):
         self.assertEqual(res_group.__class__, ResourceGroup.ResourceGroup)
         self.assertEqual(res_group.entryPoint(), "res_2")
         self.assertEqual(len(res_group.resourceList()), 1)
-
+    # <<fold
 if __name__ == '__main__':
     unittest.main()
