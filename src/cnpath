@@ -49,7 +49,12 @@ class ResourceAbsolutePathGetter:
         package = resolver.find(package_name, version)
 
         if package is not None:
-            path = package.resourceAbsolutePath(entry_point)
+            if entry_point in package.executableEntryPoints():
+                path = package.executableAbsolutePath(entry_point)
+            elif entry_point in package.resourceEntryPoints():
+                path = package.resourceAbsolutePath(entry_point)
+            else:
+                path = None
         else:
             sys.exit(1)
         if path is None:

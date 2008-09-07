@@ -228,6 +228,10 @@ class Package:
         return self.__package_root_dir
         # <<fold
     def executableEntryPoints(self): # fold>>
+        """
+        returns a list of strings of all the executable entry points as marked 
+        in the manifest
+        """
         # we don't have sets in python 2.3, so I use a dict to make a unique list
         entry_points = {}
         for group in self.__manifest.executableGroupList():
@@ -236,6 +240,10 @@ class Package:
         return entry_points.keys()
         # <<fold
     def resourceEntryPoints(self): # fold>>
+        """
+        returns a list of strings of all the resource entry points as marked 
+        in the manifest
+        """
         # we don't have sets in python 2.3, so I use a dict to make a unique list
         entry_points = {}
         for group in self.__manifest.resourceGroupList():
