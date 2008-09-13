@@ -10,6 +10,8 @@ from Chestnut import Resource
 from Chestnut import ExecutableGroup
 from Chestnut import Executable
 
+from Chestnut import DependencyType
+
 
 class TestManifest(unittest.TestCase):
     def testInitialization(self): # fold>>
@@ -85,6 +87,15 @@ class TestManifest(unittest.TestCase):
         self.assertEqual(manifest.resource("res_2","Linux-ia64").__class__, Resource.Resource)
         self.assertEqual(manifest.resource("res_2","NCC-1701"), None)
         self.assertEqual(manifest.resource("frobniz","NCC-1701"), None)
+        # <<fold
+    def testExecutableDependencies(self): # fold>>
+        manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest_with_deps.xml"))
+        executable = manifest.executable("hello", "Linux-ia64")
+        self.assertEqual(executable.__class__, Executable.Executable)
+        self.assertEqual(len(executable.getDependencies()), 3)
+        self.assertEqual(executable.getDependencies()[0], (DependencyType.PACKAGED_EXECUTABLE, "Foo-1.2"))
+        self.assertEqual(executable.getDependencies()[1], (DependencyType.PACKAGED_RESOURCE, "Bar-1.2/resource_entry"))
+        self.assertEqual(executable.getDependencies()[2], (DependencyType.PACKAGED_RESOURCE, "Bar-1.3/resource_entry2"))
         # <<fold
 
     def testPackageDescription(self): # fold>>

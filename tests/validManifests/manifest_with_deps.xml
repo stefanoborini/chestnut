@@ -12,6 +12,7 @@
                 <Dependencies>
                     <DependsOn type="packaged_executable">Foo-1.2</DependsOn>
                     <DependsOn type="packaged_resource">Bar-1.2/resource_entry</DependsOn>
+                    <DependsOn type="packaged_resource">Bar-1.3/resource_entry2</DependsOn>
                 </Dependencies>
             </Executable>
             <Executable>

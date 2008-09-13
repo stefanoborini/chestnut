@@ -4,6 +4,7 @@ import unittest
 
 from Chestnut import Package
 from Chestnut import PathType
+from Chestnut import Manifest
 
 class TestPackage(unittest.TestCase):
         
@@ -33,62 +34,6 @@ class TestPackage(unittest.TestCase):
 
         package_path=os.path.join(script_path,"invalidPackages/no_extension-1.0.0") 
         self.assertRaises(Package.InitializationException, Package.Package, package_path)
-        # <<fold
-    def testIsRunnable(self): # fold>>
-        script_path=sys.path[0]
-
-        package_path=os.path.join(script_path,"testPackageDir1","foo-1.0.0.package") 
-        package = Package.Package(package_path)
-        self.assertEqual(package.isRunnable(), True)
-
-        package_path=os.path.join(script_path,"notRunnablePackages","missingExecFlag-1.0.0.package") 
-        package = Package.Package(package_path)
-        self.assertEqual(package.isRunnable(), False)
-        self.assertEqual(package.isRunnable("secondary_entry"), False)
-
-        package_path=os.path.join(script_path,"notRunnablePackages","unexistentExecutable-1.0.0.package")
-        package = Package.Package(package_path)
-        self.assertEqual(package.isRunnable(), False)
-        self.assertEqual(package.isRunnable("secondary_entry"), False)
-        # <<fold 
-    def testNotRunnableException(self): # fold>>
-        script_path=sys.path[0]
-
-        package_path=os.path.join(script_path,"notRunnablePackages","missingExecFlag-1.0.0.package") 
-        package = Package.Package(package_path)
-        self.assertRaises(Package.NotRunnableException, package.run)
-        self.assertRaises(Package.NotRunnableException, package.runEntryPoint, "secondary_entry")
-
-        package_path=os.path.join(script_path,"notRunnablePackages","unexistentExecutable-1.0.0.package")
-        package = Package.Package(package_path)
-        self.assertRaises(Package.NotRunnableException, package.run)
-        self.assertRaises(Package.NotRunnableException, package.runEntryPoint, "secondary_entry")
-        # <<fold 
-    def testRun(self): # fold>>
-        script_path=sys.path[0]
-        package_path=os.path.join(script_path,"testPackageDir1","foo-1.0.0.package") 
-        package = Package.Package(package_path)
-
-        pid = os.fork()
-        if pid == 0:
-            package.run()
-        
-        pid, status = os.waitpid(pid,0)
-
-        self.assertEqual(status, 0)
-        # <<fold 
-    def testRunEntryPoint(self): # fold>>
-        script_path=sys.path[0]
-        package_path=os.path.join(script_path,"testPackageDir1","foo-1.0.0.package") 
-        package = Package.Package(package_path)
-
-        pid = os.fork()
-        if pid == 0:
-            package.runEntryPoint("package_relative_type")
-        
-        pid, status = os.waitpid(pid,0)
-
-        self.assertEqual(status, 0)
         # <<fold
     def testDefaultExecutableEntryPoint(self): # fold>>
         script_path=sys.path[0]
@@ -160,6 +105,13 @@ class TestPackage(unittest.TestCase):
 
         self.assertEqual(package.version(), ("1", "0", "0"))
         # <<fold
+    def testManifest(self): # fold>>
+        script_path=sys.path[0]
+        package_path=os.path.join(script_path,"testPackageDir1/foo-1.0.0.package") 
+        package = Package.Package(package_path)
+
+        self.assertEqual(package.manifest().__class__, Manifest.Manifest)
+        # <<fold
 
     def testComputeExecutableAbsolutePath(self): # fold>>
         self.assertEqual(Package._computeExecutableAbsolutePath("/foo/bar-1.0.0.package", "chu/fraz", PathType.PACKAGE_RELATIVE, "Linux-i386" ), 
@@ -191,15 +143,6 @@ class TestPackage(unittest.TestCase):
         self.assertEqual(Package._splitVersionedName("   "), None)
         self.assertEqual(Package._splitVersionedName("foo-a. .c"), None)
         self.assertEqual(Package._splitVersionedName("foo-a..c"), None)
-        # <<fold
-    def testWhich(self): # fold>>
-        self.assertEqual(Package._which("ls"), os.path.join("/","bin","ls"))
-        self.assertEqual(Package._which("wataa"), None)
-        # <<fold
-    def testIsExecutable(self): # fold>>
-        self.assertEqual(Package._isExecutable(os.path.join("/","bin","ls")), True)
-        self.assertEqual(Package._isExecutable(os.path.join("/","bin")), False)
-        self.assertEqual(Package._isExecutable(os.path.join(script_path,"manifest.xml")), False)
         # <<fold
 
         

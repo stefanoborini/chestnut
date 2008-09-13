@@ -33,7 +33,7 @@ class Executable:
         return self.__interpreter
     def addDependency(self,dependency_type,dependency):
         if not DependencyType.validDependencyType(dependency_type):
-            raise Exception("Invalid dependency type")
+            raise Exception("Invalid dependency type "+dependency_type)
         self.__dependencies.append((dependency_type, dependency))
     def getDependencies(self):
         return self.__dependencies

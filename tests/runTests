@@ -12,9 +12,10 @@ import TestPlatform
 import TestResource
 import TestResourceGroup
 import TestPackage
+import TestPackageRunner
 import TestPathType
 import TestDependencyType
-
+import TestCnrun
 
 all_test_suite=unittest.TestSuite()
 
@@ -27,8 +28,10 @@ for test_case_class in [
                 TestResource.TestResource,
                 TestResourceGroup.TestResourceGroup,
                 TestPackage.TestPackage,
+                TestPackageRunner.TestPackageRunner,
                 TestPathType.TestPathType,
                 TestDependencyType.TestDependencyType,
+                TestCnrun.TestCnrun,
                 ]:
     all_test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(test_case_class))
 

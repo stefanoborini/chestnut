@@ -7,6 +7,7 @@ import ExecutableGroup
 import Resource
 import ResourceGroup
 import PathType
+import DependencyType
 
 class Manifest:
     def __init__(self, path): # fold>>
@@ -243,11 +244,23 @@ def _parseExecutableNode(executable_node): # fold>>
         if len(interpreter) == 0:
             raise Exception("Empty interpreter specification for executable")
 
+    dependency_nodelist=executable_node.getElementsByTagName("Dependencies")
+    if len(dependency_nodelist) > 1:
+        raise Exception("Too many dependency root nodes for executable")
+
+    dependencies=[]
+    if len(dependency_nodelist) == 1:
+        dependencies = _parseDependencies(dependency_nodelist[0])
+
     executable = Executable.Executable()
     executable.setPath(path)
     executable.setPathType(path_type)
     executable.setInterpreter(interpreter)
     executable.setPlatform(platform)
+
+    for dependency in dependencies:
+        type, name = dependency
+        executable.addDependency(type, name)
 
     return executable
 # <<fold
@@ -340,7 +353,22 @@ def _parsePackageDescription(elem): # fold>>
 def _parseVersion(node): # fold>>
     return node.getAttribute("version")
     # <<fold
+def _parseDependencies(node):
+    dep_list = []
+    depends_on_nodelist = node.getElementsByTagName("DependsOn")
+    for dependency in depends_on_nodelist:
+        type_string = dependency.getAttribute("type")
+        if type_string == "packaged_executable":
+            type = DependencyType.PACKAGED_EXECUTABLE
+        elif type_string == "packaged_resource":
+            type = DependencyType.PACKAGED_RESOURCE
+        else:
+            raise Exception("Empty or invalid dependency type specification for executable")
+        dep = dependency.childNodes[0].nodeValue
+        dep_list.append( (type, dep) )
 
+    return dep_list
+   
 def _getContentsNode(elem): # fold>>
     contents_nodelist = elem.getElementsByTagName("Contents")
     if len(contents_nodelist) == 0:
