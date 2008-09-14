@@ -3,6 +3,7 @@
 import Manifest
 import Platform
 import PathType
+import Utils
 
 import os
 import re
@@ -21,7 +22,7 @@ class Package:
             raise InitializationException("Invalid package extension "+extension)
         
         try: 
-            name, version = _splitVersionedName(versioned_name)
+            name, version, entry_point = Utils.qualifiedNameComponents(versioned_name)
         except:
             raise InitializationException("Invalid name for package ", versioned_name)
 
@@ -146,11 +147,10 @@ class Package:
         return os.path.splitext(os.path.basename(self.rootDir()))[0]
         # <<fold
     def name(self): # fold>>
-        return _splitVersionedName(self.versionedName())[0]
+        return Utils.qualifiedNameComponents(self.versionedName())[0]
         # <<fold
     def version(self): # fold>>
-        (name, version) = _splitVersionedName(self.versionedName())
-        return version
+        return Utils.qualifiedNameComponents(self.versionedName())[1]
         # <<fold
     def description(self): # fold>>
         return self.__manifest.packageDescription()
@@ -174,38 +174,6 @@ def _computeResourceAbsolutePath(package_root_dir, path, path_type, platform): #
         return os.path.join(package_root_dir, path)
     
     return None
-    # <<fold
-def _splitVersionedName(versioned_name): # fold>>
-    """
-    @description parses a versioned name and returns the components
-    @param versioned_name: a string in the format name[-major[.minor[.patch_level]]]
-    @return A tuple with four elements (name, major, minor, patch_level) with missing values set to None
-    @return If the versioned_name string does not comply with the format, it returns None.
-    """
-
-    if len(versioned_name.strip()) == 0:
-        return None
-
-    l = versioned_name.split("-")
-
-    if len(l) == 1:
-        return (versioned_name, ())
-    elif len(l) == 2:
-        name, version_string = l
-    else:
-        return None
-        
-    if len(version_string.strip()) == 0:
-        return None
-
-    version_tuple = tuple(version_string.split("."))
-    
-    for entry in version_tuple:
-        if len(entry.strip()) == 0:
-            return None
-
-    return (name, version_tuple)
-
     # <<fold
 def _computeExecutableAbsolutePath(package_root_dir, path, path_type, platform): # fold>>
     """
