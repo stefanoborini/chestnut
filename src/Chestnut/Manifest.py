@@ -7,6 +7,7 @@ import ExecutableGroup
 import Resource
 import ResourceGroup
 import PathType
+import Dependency
 import DependencyType
 
 class Manifest:
@@ -259,8 +260,7 @@ def _parseExecutableNode(executable_node): # fold>>
     executable.setPlatform(platform)
 
     for dependency in dependencies:
-        type, name = dependency
-        executable.addDependency(type, name)
+        executable.addDependency(dependency)
 
     return executable
 # <<fold
@@ -365,7 +365,7 @@ def _parseDependencies(node):
         else:
             raise Exception("Empty or invalid dependency type specification for executable")
         dep = dependency.childNodes[0].nodeValue
-        dep_list.append( (type, dep) )
+        dep_list.append( Dependency.Dependency(type, dep) )
 
     return dep_list
    

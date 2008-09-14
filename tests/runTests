@@ -14,6 +14,7 @@ import TestResourceGroup
 import TestPackage
 import TestPackageRunner
 import TestPathType
+import TestDependency
 import TestDependencyType
 import TestCnrun
 
@@ -30,6 +31,7 @@ for test_case_class in [
                 TestPackage.TestPackage,
                 TestPackageRunner.TestPackageRunner,
                 TestPathType.TestPathType,
+                TestDependency.TestDependency,
                 TestDependencyType.TestDependencyType,
                 TestCnrun.TestCnrun,
                 ]:

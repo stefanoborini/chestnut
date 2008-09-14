@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # @author Stefano Borini 
 import PathType
-import DependencyType
 
 class Executable:
     """
@@ -31,10 +30,8 @@ class Executable:
         return self.__path_type
     def interpreter(self):
         return self.__interpreter
-    def addDependency(self,dependency_type,dependency):
-        if not DependencyType.validDependencyType(dependency_type):
-            raise Exception("Invalid dependency type "+dependency_type)
-        self.__dependencies.append((dependency_type, dependency))
-    def getDependencies(self):
+    def addDependency(self,dependency):
+        self.__dependencies.append( dependency )
+    def dependencies(self):
         return self.__dependencies
 

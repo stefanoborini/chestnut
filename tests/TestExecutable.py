@@ -5,6 +5,7 @@ import unittest
 from Chestnut import Executable
 from Chestnut import PathType
 from Chestnut import DependencyType
+from Chestnut import Dependency
 
 class TestExecutable(unittest.TestCase):
     def testInitialization(self):
@@ -41,10 +42,12 @@ class TestExecutable(unittest.TestCase):
 
     def testDependencies(self):
         executable = Executable.Executable()
-        executable.addDependency(DependencyType.PACKAGED_EXECUTABLE, "foo-1.2/bar")
-        executable.addDependency(DependencyType.PACKAGED_RESOURCE, "foo-1.2/baz")
+        executable.addDependency( Dependency.Dependency(DependencyType.PACKAGED_EXECUTABLE, "foo-1.2/bar"))
+        executable.addDependency( Dependency.Dependency(DependencyType.PACKAGED_RESOURCE, "foo-1.2/baz"))
        
-        self.assertEqual(len(executable.getDependencies()), 2)
+        self.assertEqual(len(executable.dependencies()), 2)
+        self.assertEqual(executable.dependencies()[0].__class__, Dependency.Dependency)
+        self.assertEqual(executable.dependencies()[1].__class__, Dependency.Dependency)
 
 
 if __name__ == '__main__':

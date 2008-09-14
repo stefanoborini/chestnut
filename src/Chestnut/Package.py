@@ -155,6 +155,8 @@ class Package:
     def description(self): # fold>>
         return self.__manifest.packageDescription()
         # <<fold
+    def dependencies(self, entry_point):
+        return self.__manifest.dependencies(entry_point)
 
 def _computeResourceAbsolutePath(package_root_dir, path, path_type, platform): # fold>>
     """

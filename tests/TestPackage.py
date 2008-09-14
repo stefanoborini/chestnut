@@ -5,6 +5,7 @@ import unittest
 from Chestnut import Package
 from Chestnut import PathType
 from Chestnut import Manifest
+from Chestnut import Dependency
 
 class TestPackage(unittest.TestCase):
         
@@ -112,6 +113,24 @@ class TestPackage(unittest.TestCase):
 
         self.assertEqual(package.manifest().__class__, Manifest.Manifest)
         # <<fold
+    def testDependencies(self): # fold>>
+        script_path=sys.path[0]
+        package_path=os.path.join(script_path,"testPackageDir1/foo-1.0.0.package") 
+        package = Package.Package(package_path)
+
+        deps = package.manifest().executableGroup("standard_type").executable("Linux-ia64").dependencies()
+        self.assertEqual(deps.__class__, list)
+        self.assertEqual(len(deps), 0)
+
+        package_path=os.path.join(script_path,"testPackageDir1/withDependencies-1.0.0.package") 
+        package = Package.Package(package_path)
+
+        deps = package.manifest().executableGroup("default").executable("Linux-ia64").dependencies()
+        self.assertEqual(deps.__class__, list)
+        self.assertEqual(len(deps), 4)
+        for dependency in deps:
+            self.assertEqual(dependency.__class__, Dependency.Dependency)
+    # <<fold
 
     def testComputeExecutableAbsolutePath(self): # fold>>
         self.assertEqual(Package._computeExecutableAbsolutePath("/foo/bar-1.0.0.package", "chu/fraz", PathType.PACKAGE_RELATIVE, "Linux-i386" ), 

@@ -9,8 +9,8 @@ from Chestnut import ResourceGroup
 from Chestnut import Resource
 from Chestnut import ExecutableGroup
 from Chestnut import Executable
-
 from Chestnut import DependencyType
+from Chestnut import Dependency
 
 
 class TestManifest(unittest.TestCase):
@@ -92,10 +92,22 @@ class TestManifest(unittest.TestCase):
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest_with_deps.xml"))
         executable = manifest.executable("hello", "Linux-ia64")
         self.assertEqual(executable.__class__, Executable.Executable)
-        self.assertEqual(len(executable.getDependencies()), 3)
-        self.assertEqual(executable.getDependencies()[0], (DependencyType.PACKAGED_EXECUTABLE, "Foo-1.2"))
-        self.assertEqual(executable.getDependencies()[1], (DependencyType.PACKAGED_RESOURCE, "Bar-1.2/resource_entry"))
-        self.assertEqual(executable.getDependencies()[2], (DependencyType.PACKAGED_RESOURCE, "Bar-1.3/resource_entry2"))
+        self.assertEqual(len(executable.dependencies()), 3)
+
+        dep = executable.dependencies()[0]
+        self.assertEqual(dep.__class__, Dependency.Dependency)
+        self.assertEqual(dep.type(), DependencyType.PACKAGED_EXECUTABLE)
+        self.assertEqual(dep.dependency(), "Foo-1.2")
+
+        dep = executable.dependencies()[1]
+        self.assertEqual(dep.__class__, Dependency.Dependency)
+        self.assertEqual(dep.type(), DependencyType.PACKAGED_RESOURCE)
+        self.assertEqual(dep.dependency(), "Bar-1.2/resource_entry")
+
+        dep = executable.dependencies()[2]
+        self.assertEqual(dep.__class__, Dependency.Dependency)
+        self.assertEqual(dep.type(), DependencyType.PACKAGED_RESOURCE)
+        self.assertEqual(dep.dependency(), "Bar-1.3/resource_entry2")
         # <<fold
 
     def testPackageDescription(self): # fold>>
