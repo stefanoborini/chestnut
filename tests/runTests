@@ -17,6 +17,7 @@ import TestPathType
 import TestDependency
 import TestDependencyType
 import TestCnrun
+import TestUtils
 
 all_test_suite=unittest.TestSuite()
 
