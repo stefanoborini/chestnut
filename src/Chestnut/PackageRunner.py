@@ -8,7 +8,6 @@ import stat
 import Platform
 import PathType
 
-class InitializationException(Exception): pass
 class NotRunnableException(Exception): pass
 
 def isRunnable(package, entry_point=None): # fold>>
