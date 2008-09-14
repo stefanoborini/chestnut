@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# @author Stefano Borini
+
 import DependencyType
 
 class Dependency:
