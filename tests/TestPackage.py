@@ -35,7 +35,7 @@ class TestPackage(unittest.TestCase):
         package_path=os.path.join(script_path,"invalidPackages/no_extension-1.0.0") 
         self.assertRaises(Package.InitializationException, Package.Package, package_path)
         # <<fold
-    def testDefaultExecutableEntryPoint(self): # fold>>
+    def testDefaultExecutableGroupEntryPoint(self): # fold>>
         script_path=sys.path[0]
         package_path=os.path.join(script_path,"testPackageDir1","foo-1.0.0.package") 
         package = Package.Package(package_path)
