@@ -7,6 +7,9 @@ import stat
 
 import Platform
 import PathType
+import Utils
+import DependencyType
+import PackageResolver
 
 class NotRunnableException(Exception): pass
 
@@ -66,7 +69,15 @@ def isRunnable(package, entry_point=None): # fold>>
             return False
 
     for dependency in executable.dependencies():
-        pass
+        name,version, entry_point = Utils.qualifiedNameComponents(dependency.dependency())
+        resolver = PackageResolver.PackageResolver()
+        package = resolver.find(name, version)
+        if package is None:
+            return False
+        if dependency.type() == DependencyType.PACKAGED_EXECUTABLE and not isRunnable(package, entry_point):
+            return False
+        elif dependency.type() == DependencyType.PACKAGED_RESOURCE and not entry_point in package.resourceEntryPoints():
+            return False
 
     # looks like there are chances it can be executable, after all
     return True 
