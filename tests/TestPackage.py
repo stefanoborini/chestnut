@@ -148,21 +148,6 @@ class TestPackage(unittest.TestCase):
         self.assertEqual(Package._computeResourceAbsolutePath("/foo/bar-1.0.0.package", "chu/fraz", PathType.ABSOLUTE, "Linux-i386" ), 
                             os.path.join("chu/fraz"))
         # <<fold
-    def testSplitVersionedName(self): # fold>>
-        self.assertEqual(Package._splitVersionedName("foo-1.0.0"), ("foo", ("1","0","0")))
-        self.assertEqual(Package._splitVersionedName("foo-1.1.0"), ("foo", ("1","1","0")))
-        self.assertEqual(Package._splitVersionedName("foo-1.1"), ("foo", ("1","1")))
-        self.assertEqual(Package._splitVersionedName("foo-1"), ("foo", ("1",)))
-        self.assertEqual(Package._splitVersionedName("foo"), ("foo", ()))
-        self.assertEqual(Package._splitVersionedName("foo-a.b.c"), ("foo",("a","b","c")))
-
-        self.assertEqual(Package._splitVersionedName("foo-"), None)
-        self.assertEqual(Package._splitVersionedName("foo-1."), None)
-        self.assertEqual(Package._splitVersionedName("foo-la-cvcvq.234.1"), None)
-        self.assertEqual(Package._splitVersionedName("   "), None)
-        self.assertEqual(Package._splitVersionedName("foo-a. .c"), None)
-        self.assertEqual(Package._splitVersionedName("foo-a..c"), None)
-        # <<fold
 
         
 if __name__ == '__main__':
