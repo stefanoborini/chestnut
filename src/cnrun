@@ -9,6 +9,7 @@ script_path=os.path.abspath(sys.path[0]); sys.path.append(os.path.abspath(os.pat
 
 from Chestnut import PackageResolver
 from Chestnut import PackageRunner
+from Chestnut import Utils
 
 def usage():
     print "Chestnut Package Manager"
@@ -27,25 +28,16 @@ def usage():
 class Runner:
     def __init__(self):
         pass
-    def run(self, name, arguments):
-        if "/" in name:
-            # this is an attempt. It could just be a relative or absolute path
-            package_versioned_name, entry_point = name.split("/", 1)
-        else:
-            package_versioned_name = name
-            entry_point = None
-
-        parts = package_versioned_name.split("-",1)
-        if len(parts) == 2:
-            package_name, version_string = parts
-        else:
-            package_name = parts[0]
-            version_string = None
-        
-        if version_string is not None:
-            version = version_string.split(".")
-        else:
-            version = ()
+    def run(self, qualified_name, arguments):
+        try:
+            package_name, version, entry_point = Utils.qualifiedNameComponents(qualified_name)
+        except:
+            # try to run it as an ordinary program
+            try:
+                os.execvpe(qualified_name,[qualified_name, ]+arguments, os.environ)
+            except OSError:
+                print qualified_name+" : not found"
+                sys.exit(127)
 
         resolver = PackageResolver.PackageResolver()
         package = resolver.find(package_name, version)
@@ -56,10 +48,12 @@ class Runner:
             else:
                 PackageRunner.runEntryPoint(package,entry_point, arguments, os.environ)
         else :
-            # run it as an ordinary program
-            os.execvpe(name,[name, ]+arguments, os.environ)
-
-
+            try:
+                os.execvpe(qualified_name,[qualified_name, ]+arguments, os.environ)
+            except OSError:
+                print qualified_name+" : not found"
+                sys.exit(127)
+                
 if len(sys.argv) < 2:
     usage()
     sys.exit(0)

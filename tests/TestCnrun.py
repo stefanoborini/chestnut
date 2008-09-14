@@ -16,6 +16,10 @@ class TestCnrun(unittest.TestCase):
         self.assertEqual(os.system("PACKAGE_SEARCH_PATH=\""+os.path.join(script_path,"testPackageDir1")+"\" ../src/cnrun foo-1.0"), 0)
         self.assertEqual(os.system("PACKAGE_SEARCH_PATH=\""+os.path.join(script_path,"testPackageDir1")+"\" ../src/cnrun foo-1"), 0)
         self.assertEqual(os.system("PACKAGE_SEARCH_PATH=\""+os.path.join(script_path,"testPackageDir1")+"\" ../src/cnrun foo"), 0)
+        self.assertEqual(os.system("PACKAGE_SEARCH_PATH=\""+os.path.join(script_path,"testPackageDir1")+"\" ../src/cnrun /bin/ls"), 0)
+        self.assertEqual(os.system("PACKAGE_SEARCH_PATH=\""+os.path.join(script_path,"testPackageDir1")+"\" ../src/cnrun ls"), 0)
+        self.assertNotEqual(os.system("PACKAGE_SEARCH_PATH=\""+os.path.join(script_path,"testPackageDir1")+"\" ../src/cnrun cxnvxvz"), 0)
+        self.assertEqual(os.system("PACKAGE_SEARCH_PATH=\""+os.path.join(script_path,"testPackageDir1")+"\" ../src/cnrun executableTestDir/foo"), 0)
         # <<fold 
 
         
