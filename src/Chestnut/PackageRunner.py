@@ -65,6 +65,9 @@ def isRunnable(package, entry_point=None): # fold>>
         if not _isExecutable(executable_absolute_path):
             return False
 
+    for dependency in executable.dependencies():
+        pass
+
     # looks like there are chances it can be executable, after all
     return True 
     # <<fold 
