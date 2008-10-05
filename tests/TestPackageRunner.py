@@ -89,6 +89,45 @@ class TestPackageRunner(unittest.TestCase):
 
         # <<fold 
 
+# testing more complex dependency patterns
+    def testComplexDepCase1_simpleDep_working(self): # fold>>
+        script_path=sys.path[0]
+
+        package_path=os.path.join(script_path,"complexDependencyCases","working","simpleDependency","mainPackage-1.0.0.package") 
+        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","working","simpleDependency")
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner.isRunnable(package), True)
+
+        # <<fold 
+    def testComplexDepCase1_doubleDep_working(self): # fold>>
+        script_path=sys.path[0]
+
+        package_path=os.path.join(script_path,"complexDependencyCases","working","doubleDependency","mainPackage-1.0.0.package") 
+        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","working","doubleDependency")
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner.isRunnable(package), True)
+
+        # <<fold 
+    def testComplexDepCase1_cascadeDep_working(self): # fold>>
+        script_path=sys.path[0]
+
+        package_path=os.path.join(script_path,"complexDependencyCases","working","cascadeDependency","mainPackage-1.0.0.package") 
+        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","working","cascadeDependency")
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner.isRunnable(package), True)
+
+        # <<fold 
+    def testComplexDepCase1_circularDep_working(self): # fold>>
+        script_path=sys.path[0]
+
+        package_path=os.path.join(script_path,"complexDependencyCases","working","circularDependency","mainPackage-1.0.0.package") 
+        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","working","circularDependency")
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner.isRunnable(package), True)
+
+        # <<fold 
+
+
     def testWhich(self): # fold>>
         self.assertEqual(PackageRunner._which("ls"), os.path.join("/","bin","ls"))
         self.assertEqual(PackageRunner._which("wataa"), None)
