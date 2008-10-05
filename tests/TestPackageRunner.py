@@ -76,6 +76,18 @@ class TestPackageRunner(unittest.TestCase):
         self.assertEqual(PackageRunner.isRunnable(package), True)
 
         # <<fold 
+    def testMissingDependencies(self): # fold>>
+        script_path=sys.path[0]
+
+        package_path=os.path.join(script_path,"testPackageDir1","withUnresolvedDependencies-1.0.0.package") 
+        package = Package.Package(package_path)
+        os.environ["PACKAGE_SEARCH_PATH"]=""
+        self.assertEqual(PackageRunner.isRunnable(package), False)
+
+        os.environ["PACKAGE_SEARCH_PATH"]=dependenciesPath()
+        self.assertEqual(PackageRunner.isRunnable(package), False)
+
+        # <<fold 
 
     def testWhich(self): # fold>>
         self.assertEqual(PackageRunner._which("ls"), os.path.join("/","bin","ls"))
