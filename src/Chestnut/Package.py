@@ -109,8 +109,9 @@ class Package:
         return group.description()
 
         # <<fold
-    def manifest(self):
+    def manifest(self): # fold>>
         return self.__manifest
+    # <<fold
 
     def rootDir(self): # fold>>
         """
