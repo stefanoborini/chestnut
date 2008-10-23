@@ -5,6 +5,8 @@ import unittest
 from Chestnut import Package
 from Chestnut import PackageRunner
 from Chestnut import PathType
+from Chestnut import Dependency
+from Chestnut import DependencyType
 
 class TestPackageRunner(unittest.TestCase):
         
@@ -88,6 +90,30 @@ class TestPackageRunner(unittest.TestCase):
         self.assertEqual(PackageRunner.isRunnable(package), False)
 
         # <<fold 
+    def testTryResolve(self): # fold>>
+        script_path=sys.path[0]
+        d = Dependency.Dependency(DependencyType.PACKAGED_EXECUTABLE, "DependencyPackage-1.2.0")
+
+        self.assertEqual(PackageRunner._tryResolve(d), None)
+        os.environ["PACKAGE_SEARCH_PATH"]=dependenciesPath()
+        self.assertNotEqual(PackageRunner._tryResolve(d), None)
+
+        # <<fold 
+    def testHasLocalRunnabilityRequisites(self): # fold>>
+        script_path=sys.path[0]
+
+        package_path=os.path.join(script_path,"testPackageDir1","foo-1.0.0.package") 
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner._hasLocalRunnabilityRequisites(package, package.defaultExecutableGroupEntryPoint()), True)
+
+        package_path=os.path.join(script_path,"notRunnablePackages","missingExecFlag-1.0.0.package") 
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner._hasLocalRunnabilityRequisites(package,"secondary_entry"), False)
+
+        package_path=os.path.join(script_path,"notRunnablePackages","unexistentExecutable-1.0.0.package")
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner._hasLocalRunnabilityRequisites(package,"secondary_entry"), False)
+        # <<fold 
 
 # testing more complex dependency patterns
     def testComplexDepCase1_simpleDep_working(self): # fold>>
@@ -137,6 +163,12 @@ class TestPackageRunner(unittest.TestCase):
         self.assertEqual(PackageRunner._isExecutable(os.path.join("/","bin")), False)
         self.assertEqual(PackageRunner._isExecutable(os.path.join(script_path,"manifest.xml")), False)
         # <<fold
+    def testComputeExecutableAbsolutePath(self):
+        self.assertEqual(PackageRunner._computeExecutableAbsolutePath("/package/root","/stuff/path",PathType.ABSOLUTE,"Linux-ia64" ), "/stuff/path")
+        self.assertEqual(PackageRunner._computeExecutableAbsolutePath("/package/root","stuff/path",PathType.STANDARD,"Linux-ia64" ), "/package/root/Executables/Linux-ia64/stuff/path")
+        self.assertEqual(PackageRunner._computeExecutableAbsolutePath("/package/root","stuff/path",PathType.PACKAGE_RELATIVE,"Linux-ia64" ), "/package/root/stuff/path")
+        # FIXME see bug #2190377
+
 
 def dependenciesPath():
     script_path = sys.path[0]
