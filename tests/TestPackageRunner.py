@@ -66,16 +66,20 @@ class TestPackageRunner(unittest.TestCase):
 
         self.assertEqual(status, 0)
         # <<fold
+
+# testing more complex dependency patterns
     def testIsRunnableForDependency(self): # fold>>
         script_path=sys.path[0]
 
         package_path=os.path.join(script_path,"testPackageDir1","withDependencies-1.0.0.package") 
         package = Package.Package(package_path)
-        os.environ["PACKAGE_SEARCH_PATH"]=""
-        self.assertEqual(PackageRunner.isRunnable(package), False)
+#        os.environ["PACKAGE_SEARCH_PATH"]=""
+#        self.assertEqual(PackageRunner.isRunnable(package), False)
+#        os.environ["PACKAGE_SEARCH_PATH"]=""
 
         os.environ["PACKAGE_SEARCH_PATH"]=dependenciesPath()
         self.assertEqual(PackageRunner.isRunnable(package), True)
+        os.environ["PACKAGE_SEARCH_PATH"]=""
 
         # <<fold 
     def testMissingDependencies(self): # fold>>
@@ -85,20 +89,70 @@ class TestPackageRunner(unittest.TestCase):
         package = Package.Package(package_path)
         os.environ["PACKAGE_SEARCH_PATH"]=""
         self.assertEqual(PackageRunner.isRunnable(package), False)
+        os.environ["PACKAGE_SEARCH_PATH"]=""
 
         os.environ["PACKAGE_SEARCH_PATH"]=dependenciesPath()
         self.assertEqual(PackageRunner.isRunnable(package), False)
+        os.environ["PACKAGE_SEARCH_PATH"]=""
 
         # <<fold 
-    def testTryResolve(self): # fold>>
+    def testComplexDepCase1_simpleDep_working(self): # fold>>
         script_path=sys.path[0]
-        d = Dependency.Dependency(DependencyType.PACKAGED_EXECUTABLE, "DependencyPackage-1.2.0")
 
-        self.assertEqual(PackageRunner._tryResolve(d), None)
-        os.environ["PACKAGE_SEARCH_PATH"]=dependenciesPath()
-        self.assertNotEqual(PackageRunner._tryResolve(d), None)
+        package_path=os.path.join(script_path,"complexDependencyCases","working","simpleDependency","mainPackage-1.0.0.package") 
+        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","working","simpleDependency")
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner.isRunnable(package), True)
+        os.environ["PACKAGE_SEARCH_PATH"]=""
 
         # <<fold 
+    def testComplexDepCase1_doubleDep_working(self): # fold>>
+        script_path=sys.path[0]
+
+        package_path=os.path.join(script_path,"complexDependencyCases","working","doubleDependency","mainPackage-1.0.0.package") 
+        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","working","doubleDependency")
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner.isRunnable(package), True)
+        os.environ["PACKAGE_SEARCH_PATH"]=""
+
+        # <<fold 
+    def testComplexDepCase1_cascadeDep_working(self): # fold>>
+        script_path=sys.path[0]
+
+        package_path=os.path.join(script_path,"complexDependencyCases","working","cascadeDependency","mainPackage-1.0.0.package") 
+        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","working","cascadeDependency")
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner.isRunnable(package), True)
+        os.environ["PACKAGE_SEARCH_PATH"]=""
+
+        # <<fold 
+    def testComplexDepCase1_circularDep_working(self): # fold>>
+        script_path=sys.path[0]
+
+        package_path=os.path.join(script_path,"complexDependencyCases","working","circularDependency","mainPackage-1.0.0.package") 
+        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","working","circularDependency")
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner.isRunnable(package), True)
+        os.environ["PACKAGE_SEARCH_PATH"]=""
+
+        # <<fold 
+
+# testing protected routines
+    def testComputeExecutableAbsolutePath(self): # fold>>
+        self.assertEqual(PackageRunner._computeExecutableAbsolutePath("/package/root","/stuff/path",PathType.ABSOLUTE,"Linux-ia64" ), "/stuff/path")
+        self.assertEqual(PackageRunner._computeExecutableAbsolutePath("/package/root","stuff/path",PathType.STANDARD,"Linux-ia64" ), "/package/root/Executables/Linux-ia64/stuff/path")
+        self.assertEqual(PackageRunner._computeExecutableAbsolutePath("/package/root","stuff/path",PathType.PACKAGE_RELATIVE,"Linux-ia64" ), "/package/root/stuff/path")
+        # FIXME see bug #2190377
+    # <<fold
+    def testIsExecutable(self): # fold>> 
+        self.assertEqual(PackageRunner._isExecutable(os.path.join("/","bin","ls")), True)
+        self.assertEqual(PackageRunner._isExecutable(os.path.join("/","bin")), False)
+        self.assertEqual(PackageRunner._isExecutable(os.path.join(script_path,"manifest.xml")), False)
+        # <<fold
+    def testWhich(self): # fold>>
+        self.assertEqual(PackageRunner._which("ls"), os.path.join("/","bin","ls"))
+        self.assertEqual(PackageRunner._which("wataa"), None)
+        # <<fold
     def testHasLocalRunnabilityRequisites(self): # fold>>
         script_path=sys.path[0]
 
@@ -114,65 +168,27 @@ class TestPackageRunner(unittest.TestCase):
         package = Package.Package(package_path)
         self.assertEqual(PackageRunner._hasLocalRunnabilityRequisites(package,"secondary_entry"), False)
         # <<fold 
-
-# testing more complex dependency patterns
-    def testComplexDepCase1_simpleDep_working(self): # fold>>
+    def testResolveDep(self): # fold>>
         script_path=sys.path[0]
+        d = Dependency.Dependency(DependencyType.PACKAGED_EXECUTABLE, "DependencyPackage-1.2.0")
 
-        package_path=os.path.join(script_path,"complexDependencyCases","working","simpleDependency","mainPackage-1.0.0.package") 
-        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","working","simpleDependency")
-        package = Package.Package(package_path)
-        self.assertEqual(PackageRunner.isRunnable(package), True)
+        self.assertEqual(PackageRunner._resolveDep(d), None)
+        os.environ["PACKAGE_SEARCH_PATH"]=dependenciesPath()
+        self.assertNotEqual(PackageRunner._resolveDep(d), None)
+        os.environ["PACKAGE_SEARCH_PATH"]=""
 
         # <<fold 
-    def testComplexDepCase1_doubleDep_working(self): # fold>>
+    def testGetDependencyList(self): # fold>>
         script_path=sys.path[0]
-
-        package_path=os.path.join(script_path,"complexDependencyCases","working","doubleDependency","mainPackage-1.0.0.package") 
-        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","working","doubleDependency")
+        package_path=os.path.join(script_path,"testPackageDir1","withDependencies-1.0.0.package") 
         package = Package.Package(package_path)
-        self.assertEqual(PackageRunner.isRunnable(package), True)
-
-        # <<fold 
-    def testComplexDepCase1_cascadeDep_working(self): # fold>>
-        script_path=sys.path[0]
-
-        package_path=os.path.join(script_path,"complexDependencyCases","working","cascadeDependency","mainPackage-1.0.0.package") 
-        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","working","cascadeDependency")
-        package = Package.Package(package_path)
-        self.assertEqual(PackageRunner.isRunnable(package), True)
-
-        # <<fold 
-    def testComplexDepCase1_circularDep_working(self): # fold>>
-        script_path=sys.path[0]
-
-        package_path=os.path.join(script_path,"complexDependencyCases","working","circularDependency","mainPackage-1.0.0.package") 
-        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","working","circularDependency")
-        package = Package.Package(package_path)
-        self.assertEqual(PackageRunner.isRunnable(package), True)
-
-        # <<fold 
-
-
-    def testWhich(self): # fold>>
-        self.assertEqual(PackageRunner._which("ls"), os.path.join("/","bin","ls"))
-        self.assertEqual(PackageRunner._which("wataa"), None)
+        self.assertEqual(len(PackageRunner._getDependencyList(package, "default")), 2)
         # <<fold
-    def testIsExecutable(self): # fold>>
-        self.assertEqual(PackageRunner._isExecutable(os.path.join("/","bin","ls")), True)
-        self.assertEqual(PackageRunner._isExecutable(os.path.join("/","bin")), False)
-        self.assertEqual(PackageRunner._isExecutable(os.path.join(script_path,"manifest.xml")), False)
-        # <<fold
-    def testComputeExecutableAbsolutePath(self):
-        self.assertEqual(PackageRunner._computeExecutableAbsolutePath("/package/root","/stuff/path",PathType.ABSOLUTE,"Linux-ia64" ), "/stuff/path")
-        self.assertEqual(PackageRunner._computeExecutableAbsolutePath("/package/root","stuff/path",PathType.STANDARD,"Linux-ia64" ), "/package/root/Executables/Linux-ia64/stuff/path")
-        self.assertEqual(PackageRunner._computeExecutableAbsolutePath("/package/root","stuff/path",PathType.PACKAGE_RELATIVE,"Linux-ia64" ), "/package/root/stuff/path")
-        # FIXME see bug #2190377
-
-
-def dependenciesPath():
+# internal utility routines
+def dependenciesPath(): # fold>>
     script_path = sys.path[0]
     return os.path.join(script_path,"dependenciesDir")
-        
+    # <<fold 
+
 if __name__ == '__main__':
     unittest.main()

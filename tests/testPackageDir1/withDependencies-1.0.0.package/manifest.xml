@@ -12,8 +12,6 @@
                 <Dependencies>
                     <DependsOn type="packaged_executable">DependencyPackage-1.2</DependsOn>
                     <DependsOn type="packaged_executable">DependencyPackage-1.2/executable_entry</DependsOn>
-                    <DependsOn type="packaged_resource">DependencyPackage2-1.2/resource_entry</DependsOn>
-                    <DependsOn type="packaged_resource">DependencyPackage2-1.3/resource_entry2</DependsOn>
                 </Dependencies>
             </Executable>
             <Executable>
@@ -22,8 +20,6 @@
                 <Dependencies>
                     <DependsOn type="packaged_executable">DependencyPackage-1.2</DependsOn>
                     <DependsOn type="packaged_executable">DependencyPackage-1.2/executable_entry</DependsOn>
-                    <DependsOn type="packaged_resource">DependencyPackage2-1.2/resource_entry</DependsOn>
-                    <DependsOn type="packaged_resource">DependencyPackage2-1.3/resource_entry2</DependsOn>
                 </Dependencies>
             </Executable>
             <Executable>
@@ -32,8 +28,6 @@
                 <Dependencies>
                     <DependsOn type="packaged_executable">DependencyPackage-1.2</DependsOn>
                     <DependsOn type="packaged_executable">DependencyPackage-1.2/executable_entry</DependsOn>
-                    <DependsOn type="packaged_resource">DependencyPackage2-1.2/resource_entry</DependsOn>
-                    <DependsOn type="packaged_resource">DependencyPackage2-1.3/resource_entry2</DependsOn>
                 </Dependencies>
             </Executable>
             <Executable>
@@ -42,8 +36,6 @@
                 <Dependencies>
                     <DependsOn type="packaged_executable">DependencyPackage-1.2</DependsOn>
                     <DependsOn type="packaged_executable">DependencyPackage-1.2/executable_entry</DependsOn>
-                    <DependsOn type="packaged_resource">DependencyPackage2-1.2/resource_entry</DependsOn>
-                    <DependsOn type="packaged_resource">DependencyPackage2-1.3/resource_entry2</DependsOn>
                 </Dependencies>
             </Executable>
         </ExecutableGroup>
