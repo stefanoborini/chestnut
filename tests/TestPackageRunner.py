@@ -96,7 +96,7 @@ class TestPackageRunner(unittest.TestCase):
         os.environ["PACKAGE_SEARCH_PATH"]=""
 
         # <<fold 
-    def testComplexDepCase1_simpleDep_working(self): # fold>>
+    def testComplexDep_simpleDep_working(self): # fold>>
         script_path=sys.path[0]
 
         package_path=os.path.join(script_path,"complexDependencyCases","working","simpleDependency","mainPackage-1.0.0.package") 
@@ -106,7 +106,7 @@ class TestPackageRunner(unittest.TestCase):
         os.environ["PACKAGE_SEARCH_PATH"]=""
 
         # <<fold 
-    def testComplexDepCase1_doubleDep_working(self): # fold>>
+    def testComplexDep_doubleDep_working(self): # fold>>
         script_path=sys.path[0]
 
         package_path=os.path.join(script_path,"complexDependencyCases","working","doubleDependency","mainPackage-1.0.0.package") 
@@ -116,7 +116,7 @@ class TestPackageRunner(unittest.TestCase):
         os.environ["PACKAGE_SEARCH_PATH"]=""
 
         # <<fold 
-    def testComplexDepCase1_cascadeDep_working(self): # fold>>
+    def testComplexDep_cascadeDep_working(self): # fold>>
         script_path=sys.path[0]
 
         package_path=os.path.join(script_path,"complexDependencyCases","working","cascadeDependency","mainPackage-1.0.0.package") 
@@ -126,7 +126,7 @@ class TestPackageRunner(unittest.TestCase):
         os.environ["PACKAGE_SEARCH_PATH"]=""
 
         # <<fold 
-    def testComplexDepCase1_circularDep_working(self): # fold>>
+    def testComplexDep_circularDep_working(self): # fold>>
         script_path=sys.path[0]
 
         package_path=os.path.join(script_path,"complexDependencyCases","working","circularDependency","mainPackage-1.0.0.package") 
@@ -134,7 +134,21 @@ class TestPackageRunner(unittest.TestCase):
         package = Package.Package(package_path)
         self.assertEqual(PackageRunner.isRunnable(package), True)
         os.environ["PACKAGE_SEARCH_PATH"]=""
+    # <<fold
+    def testComplexDep_simpleDep_unexistentEntryPoint(self): # fold>>
+        package_path=os.path.join(script_path,"complexDependencyCases","notWorking","simpleDependencyUnexistentEntryPoint","mainPackage-1.0.0.package") 
+        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","notWorking","simpleDependencyUnexistentEntryPoint")
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner.isRunnable(package), False)
+        os.environ["PACKAGE_SEARCH_PATH"]=""
+        # <<fold 
 
+    def testComplexDep_simpleDep_wrongArch(self):
+        package_path=os.path.join(script_path,"complexDependencyCases","notWorking","simpleDependencyWrongArch","mainPackage-1.0.0.package") 
+        os.environ["PACKAGE_SEARCH_PATH"]=os.path.join(script_path,"complexDependencyCases","notWorking","simpleDependencyWrongArch")
+        package = Package.Package(package_path)
+        self.assertEqual(PackageRunner.isRunnable(package), False)
+        os.environ["PACKAGE_SEARCH_PATH"]=""
         # <<fold 
 
 # testing protected routines
