@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="urn:uuid:d195be0c-200a-40a4-9d05-35fdf42eb29f" version="1.0.0">
+    <Meta>
+        <Description>Dependency package</Description>
+        <DefaultExecutableGroupEntryPoint>default</DefaultExecutableGroupEntryPoint>
+    </Meta>
+    <Contents>
+        <ExecutableGroup entryPoint="default">
+            <Executable>
+                <Platform>noarch</Platform>
+                <Path type="absolute">/bin/ls</Path>
+                <Dependencies>
+                    <DependsOn
+                    type="packaged_executable">dependency-1.0.0/unexistent</DependsOn>
+                </Dependencies>
+            </Executable>
+        </ExecutableGroup>
+    </Contents>
+</Package>
