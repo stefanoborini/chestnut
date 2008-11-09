@@ -127,7 +127,7 @@ class TestPackage(unittest.TestCase):
 
         deps = package.manifest().executableGroup("default").executable("Linux-ia64").dependencies()
         self.assertEqual(deps.__class__, list)
-        self.assertEqual(len(deps), 4)
+        self.assertEqual(len(deps), 2)
         for dependency in deps:
             self.assertEqual(dependency.__class__, Dependency.Dependency)
     # <<fold
