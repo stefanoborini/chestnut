@@ -92,22 +92,13 @@ class TestManifest(unittest.TestCase):
         manifest = Manifest.Manifest(os.path.join(sys.path[0],"validManifests","manifest_with_deps.xml"))
         executable = manifest.executable("hello", "Linux-ia64")
         self.assertEqual(executable.__class__, Executable.Executable)
-        self.assertEqual(len(executable.dependencies()), 3)
+        self.assertEqual(len(executable.dependencies()), 1)
 
         dep = executable.dependencies()[0]
         self.assertEqual(dep.__class__, Dependency.Dependency)
         self.assertEqual(dep.type(), DependencyType.PACKAGED_EXECUTABLE)
         self.assertEqual(dep.dependency(), "Foo-1.2")
 
-        dep = executable.dependencies()[1]
-        self.assertEqual(dep.__class__, Dependency.Dependency)
-        self.assertEqual(dep.type(), DependencyType.PACKAGED_RESOURCE)
-        self.assertEqual(dep.dependency(), "Bar-1.2/resource_entry")
-
-        dep = executable.dependencies()[2]
-        self.assertEqual(dep.__class__, Dependency.Dependency)
-        self.assertEqual(dep.type(), DependencyType.PACKAGED_RESOURCE)
-        self.assertEqual(dep.dependency(), "Bar-1.3/resource_entry2")
         # <<fold
 
     def testPackageDescription(self): # fold>>
