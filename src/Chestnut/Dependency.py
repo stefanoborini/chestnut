@@ -4,13 +4,15 @@
 import DependencyType
 
 class Dependency:
-    def __init__(self, type, dependency):
+    def __init__(self, type, dependency): # fold>>
         if not DependencyType.validDependencyType(type):
-            raise Exception("invalid dependency type"+str(type))
+            raise Exception("Invalid dependency type "+str(type))
         self.__type = type
         self.__dependency = dependency
-    def type(self):
+        # <<fold
+    def type(self): # fold>>
         return self.__type
-    def dependency(self):
+        # <<fold
+    def dependency(self): # fold>>
         return self.__dependency
-
+        # <<fold
