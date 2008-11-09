@@ -160,10 +160,6 @@ class Manifest:
         return self.__package_description
         # <<fold
 
-
-
-
-
 class ParseException(Exception): pass
 
 def _supportedVersions():
@@ -353,22 +349,20 @@ def _parsePackageDescription(elem): # fold>>
 def _parseVersion(node): # fold>>
     return node.getAttribute("version")
     # <<fold
-def _parseDependencies(node):
+def _parseDependencies(node): # fold>>
     dep_list = []
     depends_on_nodelist = node.getElementsByTagName("DependsOn")
     for dependency in depends_on_nodelist:
         type_string = dependency.getAttribute("type")
         if type_string == "packaged_executable":
             type = DependencyType.PACKAGED_EXECUTABLE
-        elif type_string == "packaged_resource":
-            type = DependencyType.PACKAGED_RESOURCE
         else:
             raise Exception("Empty or invalid dependency type specification for executable")
         dep = dependency.childNodes[0].nodeValue
         dep_list.append( Dependency.Dependency(type, dep) )
 
     return dep_list
-   
+    # <<fold 
 def _getContentsNode(elem): # fold>>
     contents_nodelist = elem.getElementsByTagName("Contents")
     if len(contents_nodelist) == 0:
