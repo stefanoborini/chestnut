@@ -9,7 +9,6 @@ class TestDependencyType(unittest.TestCase):
     def testValidDependencyType(self): # fold>>
         script_path=sys.path[0]
         self.assertEqual(DependencyType.validDependencyType(DependencyType.PACKAGED_EXECUTABLE), True)
-        self.assertEqual(DependencyType.validDependencyType(DependencyType.PACKAGED_RESOURCE), True)
         self.assertEqual(DependencyType.validDependencyType("foo"), False)
         # <<fold
 
