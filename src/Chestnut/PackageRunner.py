@@ -208,15 +208,13 @@ def _resolveDep(dependency): # fold>>
     return dependency_package
     # <<fold
 def _isDepTreeRunnable(package, entry_point, visited_deps): # fold>>
-
     dependencies = _getDependencyList(package, entry_point)
-
     for dependency in dependencies:
         dep_name, dep_version, dep_entry_point = Utils.qualifiedNameComponents(dependency.dependency())
         for visited in visited_deps:
             visited_dep_name, visited_dep_version, visited_dep_entry_point = Utils.qualifiedNameComponents(visited.dependency())
             if dep_name == visited_dep_name and dep_version == visited_dep_version and dep_entry_point == visited_dep_entry_point:
-                print "circular dep dropped: "+dep_name+dep_version+dep_entry_point
+                print "circular dep dropped: "+dep_name
                 dependencies.remove(dependency)
 
     if not _isDependencyListSatisfied(dependencies):
@@ -237,7 +235,6 @@ def _isDepTreeRunnable(package, entry_point, visited_deps): # fold>>
 def _isDependencyListSatisfied(dependencies): # fold>>
     for dependency in dependencies:
         dependency_package = _resolveDep(dependency)
-        print dependency_package
      
         if dependency_package is None:
             return False
@@ -249,6 +246,12 @@ def _isDependencyListSatisfied(dependencies): # fold>>
 def _getDependencyList(package, entry_point): # fold>>
     if len(package.manifest().executableGroupList()) == 0: 
         return []
+
+    if entry_point is None:
+        entry_point = package.defaultExecutableGroupEntryPoint()
+        # no default? then we know the answer
+        if entry_point is None:
+            return False
 
     executable_group = package.manifest().executableGroup(entry_point)
     if executable_group is None:

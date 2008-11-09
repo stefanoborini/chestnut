@@ -7,6 +7,13 @@
     <Contents>
         <ExecutableGroup entryPoint="default">
             <Executable>
+                <Platform>Darwin-Power Macintosh</Platform>
+                <Path type="absolute">/bin/ls</Path>
+                <Dependencies>
+                    <DependsOn type="packaged_executable">subdependency-1.0.0</DependsOn>
+                </Dependencies>
+            </Executable>
+            <Executable>
                 <Platform>noarch</Platform>
                 <Path type="absolute">/bin/ls</Path>
                 <Dependencies>
