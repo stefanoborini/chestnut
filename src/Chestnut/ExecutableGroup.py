@@ -5,25 +5,33 @@ class ExecutableGroup:
     """
     Storage class for a group of executables
     """
-    def __init__(self):
+    def __init__(self): # fold>>
         self.__entry_point=None
         self.__executable_list=[]
         self.__description = None
-    def setEntryPoint(self, entry_point):
+        # <<fold
+    def setEntryPoint(self, entry_point): # fold>>
         self.__entry_point=entry_point
-    def entryPoint(self):
+        # <<fold
+    def entryPoint(self): # fold>>
         return self.__entry_point
-    def addExecutable(self, executable):
+        # <<fold
+    def addExecutable(self, executable): # fold>>
         self.__executable_list.append(executable)
-    def executableList(self):
+        # <<fold
+    def executableList(self): # fold>>
         return self.__executable_list
-    def executable(self, platform):
+        # <<fold
+    def executable(self, platform): # fold>>
         infolist = filter ( lambda x : x.platform() == platform, self.__executable_list)
         if len(infolist) > 0:
             return infolist[0]
         return None
-    def setDescription(self, description):
+        # <<fold
+    def setDescription(self, description): # fold>>
         self.__description = description
-    def description(self):
+        # <<fold
+    def description(self): # fold>>
         return self.__description
+        # <<fold
 
