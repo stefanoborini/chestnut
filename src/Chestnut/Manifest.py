@@ -359,12 +359,12 @@ def _getPathInfo(elem): # fold>>
 def _getInterpreter(elem): # fold>>
     interpreter_nodelist=elem.getElementsByTagName("Interpreter")
     if len(interpreter_nodelist) > 1:
-        raise ParseException("Too many interpreter specifications for executable")
+        raise ParseException("Too many interpreter specifications")
     
     interpreter=None
     if len(interpreter_nodelist) != 0:
         interpreter=interpreter_nodelist[0].childNodes[0].nodeValue
         if len(interpreter) == 0:
-            raise ParseException("Empty interpreter specification for executable")
+            raise ParseException("Empty interpreter specifications")
     return interpreter
 # <<fold

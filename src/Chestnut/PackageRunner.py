@@ -244,32 +244,6 @@ def _isDependencyListSatisfied(dependencies): # fold>>
     return True
     # <<fold
 def _getDependencyList(package, entry_point): # fold>>
-    if len(package.manifest().executableGroupList()) == 0: 
-        return []
-
-    if entry_point is None:
-        entry_point = package.defaultExecutableGroupEntryPoint()
-        # no default? then we know the answer
-        if entry_point is None:
-            return False
-
-    executable_group = package.manifest().executableGroup(entry_point)
-    if executable_group is None:
-        return []
-        
-    executable = executable_group.executable(Platform.currentPlatform())
-
-    if executable is None:
-        # try to see if there's an executable that can run on this platform
-        for exe in executable_group.executableList():
-            if Platform.isCompatibleWith(exe.platform()):
-                executable = exe
-                break
-
-    # still none? we rest our case
-    if executable is None:
-        return []
-
-    return executable.dependencies()
+    return package.dependencyList(entry_point)
     # <<fold
 
