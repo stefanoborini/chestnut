@@ -139,7 +139,11 @@ class TestPackage(unittest.TestCase):
                             os.path.join("/foo/bar-1.0.0.package","Executables","Linux-i386","chu/fraz"))
         self.assertEqual(Package._computeExecutableAbsolutePath("/foo/bar-1.0.0.package", "chu/fraz", PathType.ABSOLUTE, "Linux-i386" ), 
                             os.path.join("chu/fraz"))
-        # <<fold 
+        self.assertEqual(Package._computeExecutableAbsolutePath("/package/root","/stuff/path",PathType.ABSOLUTE,"Linux-ia64" ), "/stuff/path")
+        self.assertEqual(Package._computeExecutableAbsolutePath("/package/root","stuff/path",PathType.STANDARD,"Linux-ia64" ), "/package/root/Executables/Linux-ia64/stuff/path")
+        self.assertEqual(Package._computeExecutableAbsolutePath("/package/root","stuff/path",PathType.PACKAGE_RELATIVE,"Linux-ia64" ), "/package/root/stuff/path")
+        # FIXME see bug #2190377
+    # <<fold
     def testComputeResourceAbsolutePath(self): # fold>>
         self.assertEqual(Package._computeResourceAbsolutePath("/foo/bar-1.0.0.package", "chu/fraz", PathType.PACKAGE_RELATIVE, "Linux-i386" ), 
                             os.path.join("/foo/bar-1.0.0.package","chu/fraz"))

@@ -152,12 +152,6 @@ class TestPackageRunner(unittest.TestCase):
         # <<fold 
 
 # testing protected routines
-    def testComputeExecutableAbsolutePath(self): # fold>>
-        self.assertEqual(PackageRunner._computeExecutableAbsolutePath("/package/root","/stuff/path",PathType.ABSOLUTE,"Linux-ia64" ), "/stuff/path")
-        self.assertEqual(PackageRunner._computeExecutableAbsolutePath("/package/root","stuff/path",PathType.STANDARD,"Linux-ia64" ), "/package/root/Executables/Linux-ia64/stuff/path")
-        self.assertEqual(PackageRunner._computeExecutableAbsolutePath("/package/root","stuff/path",PathType.PACKAGE_RELATIVE,"Linux-ia64" ), "/package/root/stuff/path")
-        # FIXME see bug #2190377
-    # <<fold
     def testIsExecutable(self): # fold>> 
         self.assertEqual(PackageRunner._isExecutable(os.path.join("/","bin","ls")), True)
         self.assertEqual(PackageRunner._isExecutable(os.path.join("/","bin")), False)
