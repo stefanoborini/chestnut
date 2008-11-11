@@ -189,7 +189,7 @@ def _resolveDep(dependency): # fold>>
     return dependency_package
     # <<fold
 def _isDepTreeRunnable(package, entry_point, visited_deps): # fold>>
-    dependencies = _getDependencyList(package, entry_point)
+    dependencies = package.dependencyList(entry_point)
     for dependency in dependencies:
         dep_name, dep_version, dep_entry_point = Utils.qualifiedNameComponents(dependency.dependency())
         for visited in visited_deps:
@@ -223,8 +223,5 @@ def _isDependencyListSatisfied(dependencies): # fold>>
         if not _hasLocalRunnabilityRequisites(dependency_package, dep_entry_point):
             return False
     return True
-    # <<fold
-def _getDependencyList(package, entry_point): # fold>>
-    return package.dependencyList(entry_point)
     # <<fold
 

@@ -131,6 +131,13 @@ class TestPackage(unittest.TestCase):
         for dependency in deps:
             self.assertEqual(dependency.__class__, Dependency.Dependency)
     # <<fold
+    def testDependencyList(self): # fold>>
+        script_path=sys.path[0]
+        package_path=os.path.join(script_path,"testPackageDir1","withDependencies-1.0.0.package") 
+        package = Package.Package(package_path)
+        self.assertEqual(len(package.dependencyList("default")), 2)
+        self.assertEqual(len(package.dependencyList(None)), 2)
+        # <<fold
 
     def testComputeExecutableAbsolutePath(self): # fold>>
         self.assertEqual(Package._computeExecutableAbsolutePath("/foo/bar-1.0.0.package", "chu/fraz", PathType.PACKAGE_RELATIVE, "Linux-i386" ), 

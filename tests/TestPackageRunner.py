@@ -186,13 +186,6 @@ class TestPackageRunner(unittest.TestCase):
         os.environ["PACKAGE_SEARCH_PATH"]=""
 
         # <<fold 
-    def testGetDependencyList(self): # fold>>
-        script_path=sys.path[0]
-        package_path=os.path.join(script_path,"testPackageDir1","withDependencies-1.0.0.package") 
-        package = Package.Package(package_path)
-        self.assertEqual(len(PackageRunner._getDependencyList(package, "default")), 2)
-        self.assertEqual(len(PackageRunner._getDependencyList(package, None)), 2)
-        # <<fold
 # internal utility routines
 def dependenciesPath(): # fold>>
     script_path = sys.path[0]
