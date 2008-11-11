@@ -109,6 +109,30 @@ class Package:
         return group.description()
 
         # <<fold
+    def executableInterpreter(self, entry_point): # fold>>
+        
+        group = self.__manifest.executableGroup(entry_point)
+
+        if group is None:
+            return None
+
+        executable = group.executable(Platform.currentPlatform())
+
+        if executable is None:
+            return None
+
+        # try to see if there's an executable that can run on this platform
+        for exe in group.executableList():
+            if Platform.isCompatibleWith(executable.platform()):
+                executable = exe
+                break
+
+        # still none? we rest our case
+        if executable is None:
+            return False
+   
+        return executable.interpreter()
+        # <<fold
     def manifest(self): # fold>>
         return self.__manifest
     # <<fold

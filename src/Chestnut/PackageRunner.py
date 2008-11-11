@@ -132,46 +132,17 @@ def _hasLocalRunnabilityRequisites(package, entry_point): # fold>>
     @description checks if a package has local runnability characteristics, meaning
     @description that everything is checked except the dependencies being satisfied.
     """
-    # if we have no executables, it is quickly said
-    if len(package.manifest().executableGroupList()) == 0: 
-        return False
     
-    if entry_point is None:
-        entry_point = package.defaultExecutableGroupEntryPoint()
-        # no default? then we know the answer
-        if entry_point is None:
-            return False
-
-    executable_group = package.manifest().executableGroup(entry_point)
-    if executable_group is None:
-        return False
-        
-    # try with the executable for the current platform. If not found, try with something that is supported
-    executable = executable_group.executable(Platform.currentPlatform())
-
-    if executable is None:
-        # try to see if there's an executable that can run on this platform
-        for exe in executable_group.executableList():
-            if Platform.isCompatibleWith(exe.platform()):
-                executable = exe
-                break
-
-    # still none? we rest our case
-    if executable is None:
-        return False
-   
     # check for the existence of the file as specified in the path
     executable_absolute_path = package.executableAbsolutePath(entry_point)
-    if not os.path.exists(executable_absolute_path):
+    if executable_absolute_path is None or not os.path.exists(executable_absolute_path):
         return False
 
     # check if the executable is interpreted, and in this case, if the interpreter can be found and executed
-    interpreter = executable.interpreter()
+    interpreter = package.executableInterpreter(entry_point)
     if interpreter is not None:
         interpreter_path=_which(interpreter)
         if interpreter_path is None:
-            return False
-        if not _isExecutable(interpreter_path):
             return False
     else:
        # not interpreted, check the executability of the file itself 
@@ -220,6 +191,11 @@ def _isDependencyListSatisfied(dependencies): # fold>>
         if dependency_package is None:
             return False
         dep_name, dep_version, dep_entry_point = Utils.qualifiedNameComponents(dependency.dependency())
+        if dep_entry_point is None:
+            dep_entry_point = dependency_package.defaultExecutableGroupEntryPoint()
+            # no default? then we know the answer
+            if dep_entry_point is None:
+                return False
         if not _hasLocalRunnabilityRequisites(dependency_package, dep_entry_point):
             return False
     return True
