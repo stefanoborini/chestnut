@@ -77,7 +77,7 @@ def runEntryPoint(package, entry_point, arguments=None, environment=None): # fol
                 executable = exe
                 break
    
-    executable_absolute_path = _computeExecutableAbsolutePath(package.rootDir(), executable.path(), executable.pathType(), executable.platform())
+    executable_absolute_path = package.executableAbsolutePath(entry_point)
 
     interpreter = executable.interpreter()
     if interpreter is not None:
@@ -88,25 +88,6 @@ def runEntryPoint(package, entry_point, arguments=None, environment=None): # fol
 
     # <<fold 
 
-def _computeExecutableAbsolutePath(package_root_dir, path, path_type, platform): # fold>> 
-    """
-    @description returns the executable absolute path according to the package root dir, the path
-    @description of the resource as specified in the manifest, the path type and the platform
-    @param package_root_dir : the package root
-    @param path : the executable path as from the manifest
-    @param path_type: the path type enumeration, as derived from the manifest
-    @param platform: the platform string
-    @return a string with the path, or None if unable to compute this value
-    """
-    if path_type == PathType.ABSOLUTE:
-        return path
-    elif path_type == PathType.STANDARD:
-        return os.path.join(package_root_dir, "Executables",platform,path)
-    elif path_type == PathType.PACKAGE_RELATIVE:
-        return os.path.join(package_root_dir, path)
-     
-    return None
-    # <<fold 
 def _isExecutable(program_path): # fold>>
     """
     @description check if a program is executable.
@@ -180,7 +161,7 @@ def _hasLocalRunnabilityRequisites(package, entry_point): # fold>>
         return False
    
     # check for the existence of the file as specified in the path
-    executable_absolute_path = _computeExecutableAbsolutePath(package.rootDir(), executable.path(), executable.pathType(), executable.platform())
+    executable_absolute_path = package.executableAbsolutePath(entry_point)
     if not os.path.exists(executable_absolute_path):
         return False
 
