@@ -1,5 +1,0 @@
-<Package xmlns="urn:uuid:d195be0c-200a-40a4-9d05-35fdf42eb29f" version="1.0.0">
-    <Meta>
-        <DefaultExecutableGroupEntryPoint>hello</DefaultExecutableGroupEntryPoint>
-    </Meta>
-</Package>

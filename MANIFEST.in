@@ -1,6 +1,0 @@
-include AUTHOR
-include LICENSE
-include INSTALL
-include ReleaseNotes
-recursive-include manual *
-recursive-include examples *
