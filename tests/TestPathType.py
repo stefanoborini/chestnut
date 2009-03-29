@@ -1,5 +1,5 @@
 # @author Stefano Borini
-import os; import sys; script_path=sys.path[0]; sys.path.append(os.path.join(script_path, "../src"));
+import os; import sys; script_path=sys.path[0]; sys.path.insert(1,os.path.join(script_path, "../src"));
 import unittest
 
 from Chestnut import PathType

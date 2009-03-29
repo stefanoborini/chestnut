@@ -1,5 +1,5 @@
 # @author Stefano Borini
-import os; import sys; script_path=sys.path[0]; sys.path.append(os.path.join(script_path, "../src"));
+import os; import sys; script_path=sys.path[0]; sys.path.insert(1,os.path.join(script_path, "../src"));
 import unittest
 
 from Chestnut import Package
@@ -8,14 +8,12 @@ from Chestnut import PathType
 class TestPackage(unittest.TestCase):
         
     def testInitialization(self): # fold>>
-        script_path=sys.path[0]
         package_path=os.path.join(script_path,"testPackageDir1/foo-1.0.0.package") 
         package = Package.Package(package_path)
         self.assertEqual(package.__class__, Package.Package)
         # <<fold
 
     def testFailedInitialization(self): # fold>>
-        script_path=sys.path[0]
         package_path=os.path.join(script_path,"invalidPackages/different_extension-1.0.0.pack") 
         self.assertRaises(Package.InitializationException, Package.Package, package_path)
 
@@ -35,7 +33,6 @@ class TestPackage(unittest.TestCase):
         self.assertRaises(Package.InitializationException, Package.Package, package_path)
         # <<fold
     def testIsRunnable(self): # fold>>
-        script_path=sys.path[0]
 
         package_path=os.path.join(script_path,"testPackageDir1","foo-1.0.0.package") 
         package = Package.Package(package_path)
@@ -52,7 +49,6 @@ class TestPackage(unittest.TestCase):
         self.assertEqual(package.isRunnable("secondary_entry"), False)
         # <<fold 
     def testNotRunnableException(self): # fold>>
-        script_path=sys.path[0]
 
         package_path=os.path.join(script_path,"notRunnablePackages","missingExecFlag-1.0.0.package") 
         package = Package.Package(package_path)
@@ -65,7 +61,6 @@ class TestPackage(unittest.TestCase):
         self.assertRaises(Package.NotRunnableException, package.runEntryPoint, "secondary_entry")
         # <<fold 
     def testRun(self): # fold>>
-        script_path=sys.path[0]
         package_path=os.path.join(script_path,"testPackageDir1","foo-1.0.0.package") 
         package = Package.Package(package_path)
 
@@ -78,7 +73,6 @@ class TestPackage(unittest.TestCase):
         self.assertEqual(status, 0)
         # <<fold 
     def testRunEntryPoint(self): # fold>>
-        script_path=sys.path[0]
         package_path=os.path.join(script_path,"testPackageDir1","foo-1.0.0.package") 
         package = Package.Package(package_path)
 
@@ -91,14 +85,13 @@ class TestPackage(unittest.TestCase):
         self.assertEqual(status, 0)
         # <<fold
     def testDefaultExecutableEntryPoint(self): # fold>>
-        script_path=sys.path[0]
+        print script_path
         package_path=os.path.join(script_path,"testPackageDir1","foo-1.0.0.package") 
         package = Package.Package(package_path)
         self.assertEqual(package.defaultExecutableGroupEntryPoint(), "standard_type")
         # <<fold
     def testResourceAbsolutePath(self): # fold>>
         import platform
-        script_path=sys.path[0]
         package_path=os.path.join(script_path,"testPackageDir1","foo-1.0.0.package") 
         package = Package.Package(package_path)
         (system, host, release, version, machine, processor) = platform.uname()
@@ -122,7 +115,6 @@ class TestPackage(unittest.TestCase):
         self.assertEqual(package.rootDir(), package_path)
         # <<fold
     def testExecutableEntryPoints(self): # fold>>
-        script_path=sys.path[0]
         package_path=os.path.join(script_path,"testPackageDir1/foo-1.0.0.package") 
         package = Package.Package(package_path)
         self.assertEqual(len(package.executableEntryPoints()), 3)
@@ -132,7 +124,6 @@ class TestPackage(unittest.TestCase):
         self.assertEqual("absolute_type" in package.executableEntryPoints(), True)
         # <<fold
     def testResourceEntryPoints(self): # fold>>
-        script_path=sys.path[0]
         package_path=os.path.join(script_path,"testPackageDir1/foo-1.0.0.package") 
         package = Package.Package(package_path)
         self.assertEqual( len(package.resourceEntryPoints()), 2)
@@ -140,21 +131,18 @@ class TestPackage(unittest.TestCase):
         self.assertEqual( "res_2" in package.resourceEntryPoints(), True)
         # <<fold
     def testVersionedName(self): # fold>>
-        script_path=sys.path[0]
         package_path=os.path.join(script_path,"testPackageDir1/foo-1.0.0.package") 
         package = Package.Package(package_path)
 
         self.assertEqual(package.versionedName(), "foo-1.0.0")
         # <<fold
     def testName(self): # fold>>
-        script_path=sys.path[0]
         package_path=os.path.join(script_path,"testPackageDir1/foo-1.0.0.package") 
         package = Package.Package(package_path)
 
         self.assertEqual(package.name(), "foo")
         # <<fold
     def testVersion(self): # fold>>
-        script_path=sys.path[0]
         package_path=os.path.join(script_path,"testPackageDir1/foo-1.0.0.package") 
         package = Package.Package(package_path)
 
