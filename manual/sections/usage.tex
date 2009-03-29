@@ -1,0 +1,127 @@
+\section{Usage}
+
+\subsection{Getting a list of the available packages with cnls}
+
+The first idea to get accustomed with the system is to run cnls. It
+gives a list of all the packages it can find, in the order they are found.
+
+\begin{verbatim}
+$ cnls
+testPackage-1.0.0
+roseplot-1.1.0
+saco_utils-0.7.5
+\end{verbatim}
+
+You can also use globbing, but remember that you need to escape the symbols that could be interpreted by the shell.
+\begin{verbatim}
+$ cnls \*plot\*
+roseplot-1.1.0
+\end{verbatim}
+
+you can obtain more detailed informations if you specify the option
+\verb+-l+
+
+\begin{verbatim}
+testPackage-1.0.0:
+    Flags: xrdm
+    Location: 
+        <note: splitted for readability here in the manual>
+        /Users/stefano/Work/GenomeAtlas/runApp/tests/
+            testPackageDir1/testPackage-1.0.0.package/
+    Executable entry points:
+        defaultExecutable (default)
+        secondaryExecutable 
+    Resource entry points:
+        resource1
+        resource2
+\end{verbatim}
+
+A package has \textbf{entry points}: an entry point is a name that you can
+add to a package in order to get something specific contained into that
+package. We'll go back to them later.
+
+The location is where the package was found.
+
+The flags specify informations about the package. The presence of:
+\begin{itemize}
+\item an \verb+x+ means that the package contains executables
+\item a \verb+r+ means that the package contains resources
+\item a \verb+d+ means that the package has a default entry point for an
+executable. This has consequences when you run it with cg\_run.
+\item a \verb+m+ means that the package has executable entry points
+\textbf{other} than the default. With "other" we mean that if there's no
+default, this flag is present also if you have only one executable entry
+point.
+\end{itemize}
+
+A package and each entry point can contain brief descriptions about their task.
+You can print the brief list of packages together with their description by using the option
+\verb+-d+.
+
+\subsection{Running a package with cnrun}
+
+You can run a package with the command \verb+cnrun+.
+If a package has a default entry point, the only thing you have to specify
+is the package name (with version, in this example):
+\begin{verbatim}
+$ cnrun testPackage-1.0.0
+The default executable was executed
+\end{verbatim}
+
+you can eventually run an alternative entry point with this syntax
+\begin{verbatim}
+$ cnrun testPackage-1.0.0/secondaryExecutable
+The secondary executable was executed
+\end{verbatim}
+
+this is therefore totally equivalent to the first example
+\begin{verbatim}
+$ cnrun testPackage-1.0.0/defaultExecutable
+The default executable was executed
+\end{verbatim}
+
+It is also possible to specify a package without the version: in this case,
+the most recent version will be chosen by lexicographic criterium.  For
+example. having the following packages in our search path
+\begin{verbatim}
+foo-1.0.0
+foo-1.0.1
+foo-1.1.0
+foo-1.2.0
+foo-2.1.0
+\end{verbatim}
+
+\begin{itemize}
+\item calling \verb+cnrun foo+ will run foo-2.1.0
+\item calling \verb+cnrun foo-1+ will run foo-1.2.0
+\item calling \verb+cnrun foo-1.0+ will run foo-1.0.1
+\end{itemize}
+
+If you have multiple packages with the same name, the one that gets executed
+is the first that is found (honors the order specified in
+PACKAGE\_SEARCH\_PATH). 
+
+cnrun is totally transparent in terms of input/output. you can use it in
+unix pipelines, redirect the stdin or stdout, and pass options to the
+invoked program. You can even run standard unix programs (although there's
+apparently no real reason to do it, it is convenient to do so in some
+advanced circumstances). If the package is not found, cnrun will try to
+execute the program as in a standard shell PATH lookup. In other words, you
+can do this
+\begin{verbatim}
+$ cnrun ls -la | cnrun less
+\end{verbatim}
+
+\subsection{Getting the path of what you need: cnpath}
+
+The program cnpath gets the absolute path out of the package
+and resource entry point. In the case of resources, specifying the entry
+point is mandatory.
+
+\begin{verbatim}
+$ cnpath testPackage-1.0.0/resource1
+<note: splitted for readability here in the manual>
+/Users/stefano/Work/ GenomeAtlas/runApp/tests/testPackageDir1/
+    testPackage-1.0.0.package/Resources/Linux-ia64/resource1
+\end{verbatim}
+
