@@ -6,26 +6,36 @@ class Executable:
     """
     Storage class for a platform dependent executable
     """
-    def __init__(self):
+    def __init__(self): # fold>>
         self.__platform=None
         self.__path=None
         self.__path_type=None
         self.__interpreter=None
-    def setPath(self, path):
+
+        # <<fold
+    def setPath(self, path): # fold>>
         self.__path=path
-    def setPathType(self, path_type):
+        # <<fold
+    def setPathType(self, path_type): # fold>>
         if not PathType.validPathType(path_type):
             raise Exception("Invalid path type")
         self.__path_type=path_type
-    def setPlatform(self, platform):
+        # <<fold
+    def setPlatform(self, platform): # fold>>
         self.__platform=platform
-    def setInterpreter(self, interpreter):
+        # <<fold
+    def setInterpreter(self, interpreter): # fold>>
         self.__interpreter=interpreter
-    def platform(self):
+        # <<fold
+    def platform(self): # fold>>
         return self.__platform
-    def path(self):
+        # <<fold
+    def path(self): # fold>>
         return self.__path
-    def pathType(self):
+        # <<fold
+    def pathType(self): # fold>>
         return self.__path_type
-    def interpreter(self):
+        # <<fold
+    def interpreter(self): # fold>>
         return self.__interpreter
+        # <<fold
