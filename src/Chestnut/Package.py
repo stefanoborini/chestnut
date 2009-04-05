@@ -114,6 +114,9 @@ class Package:
         """ 
 
         default_entry_point = self.defaultExecutableGroupEntryPoint()
+        if default_entry_point is None:
+            raise NotRunnableException("An entry point must be specified for this package.")
+
         self.runEntryPoint(default_entry_point, arguments, environment)
         # <<fold
     def runEntryPoint(self, entry_point, arguments=None, environment=None): # fold>>
