@@ -115,6 +115,8 @@ class Package:
 
         default_entry_point = self.defaultExecutableGroupEntryPoint()
         if default_entry_point is None:
+            # FIXME : this is not tested. If this feature is not successful, it will span a subshell, so
+            # it won't be catched anyway
             raise NotRunnableException("An entry point must be specified for this package.")
 
         self.runEntryPoint(default_entry_point, arguments, environment)
