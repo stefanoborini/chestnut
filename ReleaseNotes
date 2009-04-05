@@ -1,4 +1,4 @@
-Chestnut Package Manager release notes. Version 2.0.0
+Chestnut Package Manager release notes. Version 2.1.0
 -----------------------------------------------------
 
 Chestnut Package Manager is a utility to handle executables and resource files
@@ -9,3 +9,6 @@ This is the first public release of Chestnut Package Manager.  Please report
 bugs to the maintainer with copy of the error, and circumstances to reproduce
 the bug.
 
+Changes in Version 2.1.0:
+
+- better ouput for cnrun when the program is not found.
