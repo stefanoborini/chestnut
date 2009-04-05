@@ -158,10 +158,6 @@ class Manifest:
         return self.__package_description
         # <<fold
 
-
-
-
-
 class ParseException(Exception): pass
 
 def _supportedVersions():
@@ -201,47 +197,10 @@ def _parseExecutableGroupNode(executable_group_node): # fold>>
 # <<fold
 def _parseExecutableNode(executable_node): # fold>>
     
-    platform_nodelist = executable_node.getElementsByTagName("Platform")
+    platform=_getPlatform(executable_node)
+    path_type, path = _getPathInfo(executable_node)
+    interpreter = _getInterpreter(executable_node)
 
-    if len(platform_nodelist) == 0:
-        raise Exception("No platform specifications for executable")
-    if len(platform_nodelist) > 1:
-        raise Exception("Too many platform specifications for executable")
-
-    platform=platform_nodelist[0].childNodes[0].nodeValue
-
-    # getting the relative path of the binary or executable
-    path_nodelist=executable_node.getElementsByTagName("Path")
-    if len(path_nodelist) == 0:
-        raise Exception("No path specifications for executable")
-    if len(path_nodelist) > 1:
-        raise Exception("Too many path specifications for executable")
-    
-    path=path_nodelist[0].childNodes[0].nodeValue
-    if len(path) == 0:
-        raise Exception("Empty relative_path specification for executable")
-
-    path_type_string = path_nodelist[0].getAttribute("type")
-
-    if path_type_string == "absolute":
-        path_type = PathType.ABSOLUTE
-    elif path_type_string == "package_relative":
-        path_type = PathType.PACKAGE_RELATIVE
-    elif path_type_string == "standard":
-        path_type = PathType.STANDARD
-    else:
-        raise Exception("Empty or invalid path type specification for executable")
-        
-    # getting the interpreter. This can be not existent if the executable is binary.
-    interpreter_nodelist=executable_node.getElementsByTagName("Interpreter")
-    if len(interpreter_nodelist) > 1:
-        raise Exception("Too many interpreter specifications for executable")
-    
-    interpreter=None
-    if len(interpreter_nodelist) != 0:
-        interpreter=interpreter_nodelist[0].childNodes[0].nodeValue
-        if len(interpreter) == 0:
-            raise Exception("Empty interpreter specification for executable")
 
     executable = Executable.Executable()
     executable.setPath(path)
@@ -283,37 +242,9 @@ def _parseResourceNode(resource_node): # fold>>
     @return a Resource object
     """
     
-    platform_nodelist = resource_node.getElementsByTagName("Platform")
+    platform = _getPlatform(resource_node)
+    path_type, path = _getPathInfo(resource_node)
 
-    if len(platform_nodelist) == 0:
-        raise Exception("No platform specifications for resource")
-    if len(platform_nodelist) > 1:
-        raise Exception("Too many platform specifications for resource")
-
-    platform=platform_nodelist[0].childNodes[0].nodeValue
-
-    # getting the path
-    path_nodelist=resource_node.getElementsByTagName("Path")
-    if len(path_nodelist) == 0:
-        raise Exception("No path specifications for resource")
-    if len(path_nodelist) > 1:
-        raise Exception("Too many path specifications for resource")
-    
-    path=path_nodelist[0].childNodes[0].nodeValue
-    if len(path) == 0:
-        raise Exception("Empty relative_path specification for resource")
-
-    path_type_string = path_nodelist[0].getAttribute("type")
-
-    if path_type_string == "absolute":
-        path_type = PathType.ABSOLUTE
-    elif path_type_string == "package_relative":
-        path_type = PathType.PACKAGE_RELATIVE
-    elif path_type_string == "standard":
-        path_type = PathType.STANDARD
-    else:
-        raise Exception("Empty or invalid path type specification for resource")
-        
     resource = Resource.Resource()
     resource.setPath(path)
     resource.setPathType(path_type)
@@ -354,7 +285,8 @@ def _getExecutableGroupNodelist(elem): # fold>>
     # <<fold
 def _getResourceGroupNodelist(elem): # fold>>
     return elem.getElementsByTagName("ResourceGroup")
-    # <<fold
+# <<fold
+
 def _getPackageMetaNode(elem): # fold>>
     meta_nodelist=elem.getElementsByTagName("Meta")
     if len(meta_nodelist) > 1:
@@ -364,3 +296,50 @@ def _getPackageMetaNode(elem): # fold>>
     return meta_nodelist[0]
     # <<fold
 
+def _getPlatform(elem): # fold>>
+    platform_nodelist = elem.getElementsByTagName("Platform")
+
+    if len(platform_nodelist) == 0:
+        raise Exception("No platform specifications")
+    if len(platform_nodelist) > 1:
+        raise Exception("Too many platform specifications")
+
+    platform=platform_nodelist[0].childNodes[0].nodeValue
+    return platform
+# <<fold
+def _getPathInfo(elem): # fold>>
+    path_nodelist=elem.getElementsByTagName("Path")
+    if len(path_nodelist) == 0:
+        raise ParseException("No path specifications")
+    if len(path_nodelist) > 1:
+        raise ParseException("Too many path specifications")
+    
+    path=path_nodelist[0].childNodes[0].nodeValue
+    if len(path) == 0:
+        raise ParseException("Empty relative_path specification")
+
+    path_type_string = path_nodelist[0].getAttribute("type")
+
+    if path_type_string == "absolute":
+        path_type = PathType.ABSOLUTE
+    elif path_type_string == "package_relative":
+        path_type = PathType.PACKAGE_RELATIVE
+    elif path_type_string == "standard":
+        path_type = PathType.STANDARD
+    else:
+        raise ParseException("Empty or invalid path type specification")
+
+    return (path_type, path)
+# <<fold
+def _getInterpreter(elem): # fold>>
+    interpreter_nodelist=elem.getElementsByTagName("Interpreter")
+    if len(interpreter_nodelist) > 1:
+        raise ParseException("Too many interpreter specifications")
+    
+    interpreter=None
+    if len(interpreter_nodelist) != 0:
+        interpreter=interpreter_nodelist[0].childNodes[0].nodeValue
+        if len(interpreter) == 0:
+            raise ParseException("Empty interpreter specifications")
+    return interpreter
+# <<fold
