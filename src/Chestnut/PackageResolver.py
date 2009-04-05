@@ -78,7 +78,7 @@ class PackageResolver:
                     continue
                 try:
                     package = Package.Package(os.path.join(path_entry,package_dir_name))
-                except Package.InitializationException:
+                except:
                     # failed to initialize the package (missing/corrupted manifest, for example)
                     continue
                 returned_list.append(package)
