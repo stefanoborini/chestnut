@@ -86,7 +86,11 @@ class TestManifest(unittest.TestCase):
         self.assertEqual(manifest.resource("res_2","NCC-1701"), None)
         self.assertEqual(manifest.resource("frobniz","NCC-1701"), None)
         # <<fold
-    def testPackageDescription(self):
+
+
+
+
+    def testPackageDescription(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(script_path,"validManifests","manifest.xml"))
         self.assertEqual(manifest.packageDescription(), "a cool manifest for a cool package")
         # <<fold
@@ -115,8 +119,8 @@ class TestManifest(unittest.TestCase):
         self.assertEqual(exe_group.__class__, ExecutableGroup.ExecutableGroup)
         self.assertEqual(exe_group.entryPoint(), "eles")
         self.assertEqual(len(exe_group.executableList()), 2)
-
-    def testParseResourceGroupNode(self):
+        # <<fold
+    def testParseResourceGroupNode(self): # fold>>
         manifest_doc = minidom.parse(os.path.join(script_path,"validManifests","manifest.xml"))
         
         root = manifest_doc.documentElement
@@ -132,6 +136,6 @@ class TestManifest(unittest.TestCase):
         self.assertEqual(res_group.__class__, ResourceGroup.ResourceGroup)
         self.assertEqual(res_group.entryPoint(), "res_2")
         self.assertEqual(len(res_group.resourceList()), 1)
-
+    # <<fold
 if __name__ == '__main__':
     unittest.main()
