@@ -37,6 +37,15 @@ class TestManifest(unittest.TestCase):
     def testInvalidManifestUnsupportedVersion(self): # fold>>
         self.assertRaises( Manifest.ParseException, Manifest.Manifest, os.path.join(script_path,"invalidManifests","unsupported_version.xml"))
         # <<fold
+    def testInvalidManifestWrongPath1(self): # fold>>
+        self.assertRaises( Manifest.ParseException, Manifest.Manifest, os.path.join(script_path,"invalidManifests","wrong_path_1.xml"))
+        # <<fold
+    def testInvalidManifestWrongPath2(self): # fold>>
+        self.assertRaises( Manifest.ParseException, Manifest.Manifest, os.path.join(script_path,"invalidManifests","wrong_path_2.xml"))
+        # <<fold
+    def testInvalidManifestWrongPath3(self): # fold>>
+        self.assertRaises( Manifest.ParseException, Manifest.Manifest, os.path.join(script_path,"invalidManifests","wrong_path_3.xml"))
+        # <<fold
     def testDefaultExecutableGroupEntryPoint(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(script_path,"validManifests","manifest.xml"))
         self.assertEqual(manifest.defaultExecutableGroupEntryPoint(), "hello")
@@ -137,5 +146,6 @@ class TestManifest(unittest.TestCase):
         self.assertEqual(res_group.entryPoint(), "res_2")
         self.assertEqual(len(res_group.resourceList()), 1)
     # <<fold
+
 if __name__ == '__main__':
     unittest.main()

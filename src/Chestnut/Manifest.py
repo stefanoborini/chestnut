@@ -316,7 +316,7 @@ def _getPathInfo(elem): # fold>>
     
     path=path_nodelist[0].childNodes[0].nodeValue
     if len(path) == 0:
-        raise ParseException("Empty relative_path specification")
+        raise ParseException("Empty path specification")
 
     path_type_string = path_nodelist[0].getAttribute("type")
 
@@ -328,6 +328,12 @@ def _getPathInfo(elem): # fold>>
         path_type = PathType.STANDARD
     else:
         raise ParseException("Empty or invalid path type specification")
+
+    if path[0] == "/" and path_type in (PathType.PACKAGE_RELATIVE, PathType.STANDARD):
+        raise ParseException("Absolute paths not allowed with package relative or standard path types")
+
+    if path[0] != "/" and path_type == PathType.ABSOLUTE:
+        raise ParseException("Absolute path is required with absolute path type")
 
     return (path_type, path)
 # <<fold
