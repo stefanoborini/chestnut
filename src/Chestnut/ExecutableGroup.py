@@ -9,6 +9,7 @@ class ExecutableGroup:
         self.__entry_point=None
         self.__executable_list=[]
         self.__description = None
+        self.__deprecation_message = None
         # <<fold
     def setEntryPoint(self, entry_point): # fold>>
         self.__entry_point=entry_point
@@ -34,4 +35,12 @@ class ExecutableGroup:
     def description(self): # fold>>
         return self.__description
         # <<fold
-
+    def setDeprecationMessage(self, message): # fold>>
+        self.__deprecation_message = message
+        # <<fold
+    def deprecationMessage(self): # fold>>
+        return self.__deprecation_message
+        # <<fold
+    def isDeprecated(self): # fold>>
+        return self.__deprecation_message is not None
+        # <<fold

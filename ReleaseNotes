@@ -12,3 +12,4 @@ the bug.
 Changes in Version 2.1.0:
 
 - better ouput for cnrun when the program is not found.
+- fixed outstanding bugs

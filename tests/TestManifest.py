@@ -95,10 +95,6 @@ class TestManifest(unittest.TestCase):
         self.assertEqual(manifest.resource("res_2","NCC-1701"), None)
         self.assertEqual(manifest.resource("frobniz","NCC-1701"), None)
         # <<fold
-
-
-
-
     def testPackageDescription(self): # fold>>
         manifest = Manifest.Manifest(os.path.join(script_path,"validManifests","manifest.xml"))
         self.assertEqual(manifest.packageDescription(), "a cool manifest for a cool package")
@@ -146,6 +142,31 @@ class TestManifest(unittest.TestCase):
         self.assertEqual(res_group.entryPoint(), "res_2")
         self.assertEqual(len(res_group.resourceList()), 1)
     # <<fold
+
+    def testNoDeprecation(self): # fold>>
+        manifest = Manifest.Manifest(os.path.join(script_path,"validManifests","manifest.xml")) 
+        self.assertEqual(manifest.isPackageDeprecated(), False)
+        self.assertEqual(manifest.deprecationMessage(), None)
+        # <<fold
+    def testDeprecationMeta(self): # fold>>
+        manifest = Manifest.Manifest(os.path.join(script_path,"validManifests","manifest_deprecate_package.xml"))
+        self.assertEqual(manifest.isPackageDeprecated(), True)
+        self.assertEqual(manifest.deprecationMessage(), "old and tired")
+        # <<fold
+    def testDeprecationExecutable(self): # fold>>
+        manifest = Manifest.Manifest(os.path.join(script_path,"validManifests","manifest_deprecate_executable_entry_point.xml"))
+        self.assertEqual(manifest.executableGroup("hello").isDeprecated(), True)
+        self.assertEqual(manifest.executableGroup("hello").deprecationMessage(), "old and tired")
+        self.assertEqual(manifest.executableGroup("a_name").isDeprecated(), False)
+        self.assertEqual(manifest.executableGroup("a_name").deprecationMessage(), None)
+        # <<fold
+    def testDeprecationResource(self): # fold>>
+        manifest = Manifest.Manifest(os.path.join(script_path,"validManifests","manifest_deprecate_resource_entry_point.xml"))
+        self.assertEqual(manifest.resourceGroup("res_1").isDeprecated(), True)
+        self.assertEqual(manifest.resourceGroup("res_1").deprecationMessage(), "old and tired")
+        self.assertEqual(manifest.resourceGroup("res_2").isDeprecated(), False)
+        self.assertEqual(manifest.resourceGroup("res_2").deprecationMessage(), None)
+        # <<fold
 
 if __name__ == '__main__':
     unittest.main()

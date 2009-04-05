@@ -67,10 +67,11 @@ class Manifest:
                     raise ParseException("Default executable group entry point does not reference any currently defined executable group")
 
             self.__package_description = _parsePackageDescription(package_meta_node)
-
+            self.__deprecation_message = _parseDeprecated(package_meta_node)
         else:
             self.__default_executable_group_entry_point = None
             self.__package_description = None
+            self.__deprecation_message = None
 
         # <<fold
     def defaultExecutableGroupEntryPoint(self): # fold>>
@@ -157,6 +158,12 @@ class Manifest:
         """
         return self.__package_description
         # <<fold
+    def isPackageDeprecated(self): # fold>>
+        return self.__deprecation_message is not None
+        # <<fold
+    def deprecationMessage(self): # fold>>
+        return self.__deprecation_message
+        # <<fold
 
 class ParseException(Exception): pass
 
@@ -185,6 +192,12 @@ def _parseExecutableGroupNode(executable_group_node): # fold>>
         description = None
 
     executable_group.setDescription(description)
+
+    deprecated = executable_group_node.getAttribute("deprecated")
+    if len(deprecated) == 0:
+        deprecated = None
+
+    executable_group.setDeprecationMessage(deprecated)
 
     # get each executable and add it to the group
     executable_nodelist=executable_group_node.getElementsByTagName("Executable")
@@ -228,6 +241,12 @@ def _parseResourceGroupNode(resource_group_node): # fold>>
 
     resource_group.setDescription(description)
 
+    deprecated = resource_group_node.getAttribute("deprecated")
+    if len(deprecated) == 0:
+        deprecated = None
+
+    resource_group.setDeprecationMessage(deprecated)
+
     resource_nodelist = resource_group_node.getElementsByTagName("Resource")
     for resource_node in resource_nodelist:
         resource = _parseResourceNode(resource_node)
@@ -258,6 +277,14 @@ def _parseDefaultExecutableGroupEntryPoint(elem): # fold>>
         raise ParseException("Too many DefaultExecutableGroupEntryPoint entries")
     if len(default_execgroup_entry_nodelist) == 1:
         return default_execgroup_entry_nodelist[0].childNodes[0].nodeValue
+    return None
+    # <<fold
+def _parseDeprecated(elem): # fold>>
+    deprecated = elem.getElementsByTagName("Deprecated")
+    if len(deprecated) > 1:
+        raise ParseException("Too many Deprecated entries")
+    if len(deprecated) == 1:
+        return deprecated[0].childNodes[0].nodeValue
     return None
     # <<fold
 def _parsePackageDescription(elem): # fold>>
