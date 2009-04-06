@@ -156,6 +156,7 @@ class TestPackage(unittest.TestCase):
 
         self.assertEqual(package.isDeprecated(), True)
         self.assertEqual(package.deprecationMessage(), "old and tired")
+        self.assertEqual(package.hasDeprecatedEntryPoints(), False)
         # <<fold
     def testIsDeprecatedExecutable(self): # fold>>
         package_path=os.path.join(script_path,"testPackageDir1/deprecated2-1.0.0.package") 
@@ -163,6 +164,7 @@ class TestPackage(unittest.TestCase):
 
         self.assertEqual(package.isExecutableDeprecated("package_relative_type"), True)
         self.assertEqual(package.executableDeprecationMessage("package_relative_type"), "old and tired")
+        self.assertEqual(package.hasDeprecatedEntryPoints(), True)
         # <<fold
     def testIsDeprecatedResource(self): # fold>>
         package_path=os.path.join(script_path,"testPackageDir1/deprecated3-1.0.0.package") 
@@ -170,6 +172,7 @@ class TestPackage(unittest.TestCase):
 
         self.assertEqual(package.isResourceDeprecated("res_1"), True)
         self.assertEqual(package.resourceDeprecationMessage("res_1"), "old and tired")
+        self.assertEqual(package.hasDeprecatedEntryPoints(), True)
         # <<fold
     def testRaiseErrorIfUnexistentEntryPoint(self): # fold>>
         package_path=os.path.join(script_path,"testPackageDir1/deprecated3-1.0.0.package") 

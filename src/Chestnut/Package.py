@@ -258,6 +258,17 @@ class Package:
 
         return group.deprecationMessage()
         # <<fold
+    def hasDeprecatedEntryPoints(self): # fold>>
+        for entry_point in self.executableEntryPoints():
+            if self.isExecutableDeprecated(entry_point):
+                return True
+
+        for entry_point in self.resourceEntryPoints():
+            if self.isResourceDeprecated(entry_point):
+                return True
+        return False
+
+        # <<fold
         
         
     def rootDir(self): # fold>>
