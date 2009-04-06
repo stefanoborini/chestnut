@@ -11,6 +11,7 @@ import stat
 
 class InitializationException(Exception): pass
 class NotRunnableException(Exception): pass
+class UnexistentEntryPointException(Exception): pass
 
 class Package:
     def __init__(self, path): # fold>>
@@ -225,7 +226,40 @@ class Package:
         return group.description()
 
         # <<fold
+    def isExecutableDeprecated(self, entry_point): # fold>>
+        group = self.__manifest.executableGroup(entry_point)
 
+        if group is None:
+            raise UnexistentEntryPointException("Unexistent entry point : "+str(entry_point))
+
+        return group.isDeprecated()
+        # <<fold
+    def isResourceDeprecated(self, entry_point): # fold>>
+        group = self.__manifest.resourceGroup(entry_point)
+
+        if group is None:
+            raise UnexistentEntryPointException("Unexistent entry point : "+str(entry_point))
+
+        return group.isDeprecated()
+        # <<fold
+    def executableDeprecationMessage(self, entry_point): # fold>>
+        group = self.__manifest.executableGroup(entry_point)
+
+        if group is None:
+            raise UnexistentEntryPointException("Unexistent entry point : "+str(entry_point))
+
+        return group.deprecationMessage()
+        # <<fold
+    def resourceDeprecationMessage(self, entry_point): # fold>>
+        group = self.__manifest.resourceGroup(entry_point)
+
+        if group is None:
+            raise UnexistentEntryPointException("Unexistent entry point : "+str(entry_point))
+
+        return group.deprecationMessage()
+        # <<fold
+        
+        
     def rootDir(self): # fold>>
         """
         @description returns the root directory of the package, as absolute path.
@@ -269,7 +303,12 @@ class Package:
     def description(self): # fold>>
         return self.__manifest.packageDescription()
         # <<fold
-
+    def isDeprecated(self): # fold>>
+        return self.__manifest.isPackageDeprecated()
+        # <<fold
+    def deprecationMessage(self): # fold>>
+        return self.__manifest.deprecationMessage() 
+        # <<fold
 def _computeResourceAbsolutePath(package_root_dir, path, path_type, platform): # fold>>
     """
     @description returns the resource absolute path according to the package root dir, the path

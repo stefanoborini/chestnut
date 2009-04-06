@@ -12,4 +12,5 @@ the bug.
 Changes in Version 2.1.0:
 
 - better ouput for cnrun when the program is not found.
+- added possibility to put a deprecation message
 - fixed outstanding bugs

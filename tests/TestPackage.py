@@ -150,6 +150,36 @@ class TestPackage(unittest.TestCase):
 
         self.assertEqual(package.version(), ("1", "0", "0"))
         # <<fold
+    def testIsDeprecatedPackage(self): # fold>>
+        package_path=os.path.join(script_path,"testPackageDir1/deprecated1-1.0.0.package") 
+        package = Package.Package(package_path)
+
+        self.assertEqual(package.isDeprecated(), True)
+        self.assertEqual(package.deprecationMessage(), "old and tired")
+        # <<fold
+    def testIsDeprecatedExecutable(self): # fold>>
+        package_path=os.path.join(script_path,"testPackageDir1/deprecated2-1.0.0.package") 
+        package = Package.Package(package_path)
+
+        self.assertEqual(package.isExecutableDeprecated("package_relative_type"), True)
+        self.assertEqual(package.executableDeprecationMessage("package_relative_type"), "old and tired")
+        # <<fold
+    def testIsDeprecatedResource(self): # fold>>
+        package_path=os.path.join(script_path,"testPackageDir1/deprecated3-1.0.0.package") 
+        package = Package.Package(package_path)
+
+        self.assertEqual(package.isResourceDeprecated("res_1"), True)
+        self.assertEqual(package.resourceDeprecationMessage("res_1"), "old and tired")
+        # <<fold
+    def testRaiseErrorIfUnexistentEntryPoint(self): # fold>>
+        package_path=os.path.join(script_path,"testPackageDir1/deprecated3-1.0.0.package") 
+        package = Package.Package(package_path)
+
+        self.assertRaises(Package.UnexistentEntryPointException, package.isExecutableDeprecated, "unexistent")
+        self.assertRaises(Package.UnexistentEntryPointException, package.executableDeprecationMessage,"unexistent")
+        self.assertRaises(Package.UnexistentEntryPointException, package.isResourceDeprecated, "unexistent")
+        self.assertRaises(Package.UnexistentEntryPointException, package.resourceDeprecationMessage,"unexistent")
+        # <<fold
 
     def testComputeExecutableAbsolutePath(self): # fold>>
         self.assertEqual(Package._computeExecutableAbsolutePath("/foo/bar-1.0.0.package", "chu/fraz", PathType.PACKAGE_RELATIVE, "Linux-i386" ), 

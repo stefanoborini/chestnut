@@ -70,6 +70,9 @@ class Lister:
         if package.defaultExecutableGroupEntryPoint() is not None:
             flags=flags+"d"
 
+        if package.isDeprecated() or package.hasDeprecatedEntryPoints():
+            flags=flags+"D"
+
         executable_entry_points = package.executableEntryPoints()
         try:
             executable_entry_points.remove(package.defaultExecutableGroupEntryPoint())
@@ -86,6 +89,9 @@ class Lister:
             print "    Description: "+description
             print "    Flags: "+flags
             print "    Location: "+package.rootDir()
+            if package.isDeprecated():
+                print "    Deprecated: "+package.deprecationMessage()
+
             if len(package.executableEntryPoints()) > 0:
                 print "    Executable entry points:"
                 for entry_point in package.executableEntryPoints():
@@ -97,6 +103,8 @@ class Lister:
                     if description is None:
                         description = "(no description)"
                     print "        "+entry_point+" "+default_flag+" : "+description
+                    if package.isExecutableDeprecated(entry_point):
+                        print "        "+" "*len(entry_point)+" "+" "*len(default_flag)+"   "+"Deprecated : "+package.executableDeprecationMessage(entry_point)
     
             if len(package.resourceEntryPoints()) > 0:
                 print "    Resource entry points:"
@@ -105,6 +113,8 @@ class Lister:
                     if description is None:
                         description = "(no description)"
                     print "        "+entry_point+" : "+description
+                    if package.isResourceDeprecated(entry_point):
+                        print "        "+" "*len(entry_point)+" "+"   "+"Deprecated : "+package.resourceDeprecationMessage(entry_point)
         else:
             if self.__description_in_short_printing is False:
                 print package.versionedName()
