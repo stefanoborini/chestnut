@@ -43,10 +43,17 @@ class Runner:
         package = resolver.find(package_name, version)
 
         if package is not None:
+            if package.isDeprecated():
+                sys.stderr.write("WARNING: package "+qualified_name+" is marked as deprecated : "+package.deprecationMessage()+"\n")
+
             if entry_point is None or len(entry_point.strip()) == 0:
-                package.run(arguments, os.environ)
-            else:
-                package.runEntryPoint(entry_point, arguments, os.environ)
+                entry_point = package.defaultExecutableGroupEntryPoint()
+
+            if package.isExecutableDeprecated(entry_point):
+                sys.stderr.write("WARNING: entry point "+qualified_name+" is marked as deprecated : "+package.executableDeprecationMessage(entry_point)+"\n")
+
+            package.runEntryPoint(entry_point, arguments, os.environ)
+
         else :
             try:
                 os.execvpe(qualified_name,[qualified_name, ]+arguments, os.environ)
