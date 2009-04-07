@@ -26,17 +26,17 @@ class Package:
         try: 
             name, version, entry_point = Utils.qualifiedNameComponents(versioned_name)
         except:
-            raise InitializationException("Invalid name for package ", versioned_name)
+            raise InitializationException("Invalid name for package "+versioned_name)
 
         if len(version) != 3:
-            raise InitializationException("Invalid name for package ", versioned_name)
+            raise InitializationException("Invalid name for package "+versioned_name)
             
         # for now we want all of them numeric
         try:
             for v in version:
                 int(v)
         except:
-            raise InitializationException("Invalid name for package ", versioned_name)
+            raise InitializationException("Invalid name for package "+versioned_name)
 
         manifest_path = os.path.join(self.__package_root_dir, "manifest.xml")
         try:
