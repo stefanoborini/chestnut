@@ -14,6 +14,16 @@ class TestPackage(unittest.TestCase):
         package = Package.Package(package_path)
         self.assertEqual(package.__class__, Package.Package)
         # <<fold
+    def testInitializationZip(self): # fold>>
+        package_path=os.path.join(script_path,"testPackageDir2","foo-1.0.0.nutshell") 
+        package = Package.Package(package_path)
+        self.assertEqual(package.__class__, Package.Package)
+        # <<fold
+    def testIsRunnableZip(self): # fold>>
+        package_path=os.path.join(script_path,"testPackageDir2","foo-1.0.0.nutshell") 
+        package = Package.Package(package_path)
+        self.assertEqual(package.isRunnable(),True)
+        # <<fold
 
     def testFailedInitialization(self): # fold>>
         package_path=os.path.join(script_path,"invalidPackages/different_extension-1.0.0.pack") 

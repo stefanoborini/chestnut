@@ -9,17 +9,22 @@ import ResourceGroup
 import PathType
 
 class Manifest:
-    def __init__(self, path): # fold>>
+    def __init__(self, path=None, string=None): # fold>>
         """
-        @description Initializes the manifest out of a given file path
+        @description Initializes the manifest out of a given file path or a given string
         @param path the manifest file path
         """
-        self.__path = path
+
+        if path is not None:
+            manifest_doc = minidom.parse(path)
+        elif string is not None:
+            manifest_doc = minidom.parseString(string) 
+        else:
+            raise TypeError("Manifest initialization does not specify path nor string")
+
         self.__all_groups = {}
         self.__default_executable_group_entry_point = None
 
-        manifest_doc = minidom.parse(path)
-        
         # handmade parsing and validation. no other choice at the time being :/
         root = manifest_doc.documentElement
 
@@ -28,8 +33,6 @@ class Manifest:
             raise ParseException("Unsupported manifest version")
 
         contents_node = _getContentsNode(root)
-
-
 
         executable_group_nodelist = _getExecutableGroupNodelist(contents_node)
         for node in executable_group_nodelist:

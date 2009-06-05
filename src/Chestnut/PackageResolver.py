@@ -74,7 +74,9 @@ class PackageResolver:
             except:
                 dir_list=[]
             for package_dir_name in dir_list:
-                if os.path.splitext(package_dir_name)[1] != os.extsep+'package':
+                if os.path.splitext(package_dir_name)[1] != os.extsep+'package' \
+                    and os.path.splitext(package_dir_name)[1] != os.extsep+"chestnut" \
+                    and os.path.splitext(package_dir_name)[1] != os.extsep+"nutshell":
                     continue
                 try:
                     package = Package.Package(os.path.join(path_entry,package_dir_name))

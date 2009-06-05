@@ -8,6 +8,9 @@ import Utils
 import os
 import re
 import stat
+import zipfile
+import tempfile
+import md5
 
 class InitializationException(Exception): pass
 class NotRunnableException(Exception): pass
@@ -15,12 +18,14 @@ class UnexistentEntryPointException(Exception): pass
 
 class Package:
     def __init__(self, path): # fold>>
-        self.__package_root_dir=os.path.abspath(path)
-        
-        package_dir_name=os.path.basename(self.__package_root_dir)
-       
-        versioned_name, extension = os.path.splitext(package_dir_name) 
-        if extension != os.extsep+'package':
+
+        versioned_name, extension = os.path.splitext(
+                                        os.path.basename(
+                                            os.path.abspath(path)
+                                            )
+                                    ) 
+        self.__versioned_name = versioned_name
+        if extension not in [ os.extsep+'package', os.extsep+"chestnut", os.extsep+"nutshell"] :
             raise InitializationException("Invalid package extension "+extension)
         
         try: 
@@ -38,14 +43,37 @@ class Package:
         except:
             raise InitializationException("Invalid name for package "+versioned_name)
 
-        manifest_path = os.path.join(self.__package_root_dir, "manifest.xml")
-        try:
-            self.__manifest = Manifest.Manifest(manifest_path)
-        except IOError, e:
-            raise InitializationException("Unable to open manifest. "+str(e))
-        except Manifest.ParseException, e:
-            raise InitializationException("Invalid manifest. "+str(e))
+        if os.path.isdir(os.path.realpath(path)):
+            self.__package_root_dir=os.path.abspath(path)
+            self.__is_zipped = False
+            self.__zipfile_path = None
         
+            manifest_path = os.path.join(self.__package_root_dir, "manifest.xml")
+            try:
+                self.__manifest = Manifest.Manifest(manifest_path)
+            except IOError, e:
+                raise InitializationException("Unable to open manifest. "+str(e))
+            except Manifest.ParseException, e:
+                raise InitializationException("Invalid manifest. "+str(e))
+        else:
+            try:
+                zf = zipfile.ZipFile(path, mode="r")
+            except:
+                raise InitializationException("Invalid zip file")
+            
+            try:
+                manifest_string = zf.read("manifest.xml")
+            except:
+                raise InitializationException("Unable to open manifest from zipfile")
+            
+            try:
+                self.__manifest = Manifest.Manifest(string=manifest_string)
+            except Manifest.ParseException, e:
+                raise InitializationException("Invalid manifest. "+str(e))
+            self.__is_zipped = True
+            self.__package_root_dir=None
+            self.__zipfile_path=path
+
         # <<fold
     def isRunnable(self, entry_point=None): # fold>>
         """
@@ -55,6 +83,10 @@ class Package:
         @description  - the executable exists for the current platform and is executable
         @description  - if an interpreter is declared, the interpreter can be found and is executable
         """
+
+        if self.__is_zipped:
+            self._unpack()
+
         # if we have no executables, it is quickly said
         if len(self.__manifest.executableGroupList()) == 0: 
             return False
@@ -65,7 +97,6 @@ class Package:
             # no default? then we know the answer
             if entry_point is None:
                 return False
-
         executable_group = self.__manifest.executableGroup(entry_point)
         if executable_group is None:
             return False
@@ -113,6 +144,8 @@ class Package:
         @description replaces the current executable with the new executable. If you want to fork, you
         @description have to do it before calling run()
         """ 
+        if self.__is_zipped:
+            self._unpack()
 
         default_entry_point = self.defaultExecutableGroupEntryPoint()
         if default_entry_point is None:
@@ -130,6 +163,9 @@ class Package:
         @description replaces the current executable with the new executable. If you want to fork, you
         @description have to do it before calling run()
         """ 
+        if self.__is_zipped:
+            self._unpack()
+
         if not self.isRunnable(entry_point):
             raise NotRunnableException("Entry point "+entry_point+" is not runnable.")
       
@@ -169,6 +205,8 @@ class Package:
         return self.__manifest.defaultExecutableGroupEntryPoint()
         # <<fold
     def resourceAbsolutePath(self, entry_point): # fold>>
+        if self.__is_zipped:
+            self._unpack()
         platform = Platform.currentPlatform()
 
         group = self.__manifest.resourceGroup(entry_point)
@@ -189,6 +227,8 @@ class Package:
         return None
         # <<fold
     def executableAbsolutePath(self, entry_point): # fold>>
+        if self.__is_zipped:
+            self._unpack()
         platform = Platform.currentPlatform()
         
         group = self.__manifest.executableGroup(entry_point)
@@ -269,13 +309,53 @@ class Package:
         return False
 
         # <<fold
-        
+    def _unpack(self): # fold>>
+        f = file(self.__zipfile_path, "rb")
+        md_five = md5.md5(f.read()).hexdigest()
+        f.close()
+
+        destdir = os.path.join(tempfile.gettempdir(), self.versionedName()+"-"+md_five)
+
+        zf = zipfile.ZipFile(self.__zipfile_path, 'r')
+        print zf.namelist()
+        for info in zf.infolist():
+            path = info.filename
+            if path.endswith("/"):
+                continue
+            if path.startswith('./'):
+                tgt = os.path.join(destdir, path[2:])
+            else:
+                tgt = os.path.join(destdir, path)
+            mode = (info.external_attr >> 16L) & 0xFFFF
+
+            perms = 0
+            if stat.S_IMODE(mode) & stat.S_IRUSR:
+                perms = perms | stat.S_IRUSR
+            if stat.S_IMODE(mode) & stat.S_IWUSR:
+                perms = perms | stat.S_IWUSR
+            if stat.S_IMODE(mode) & stat.S_IXUSR:
+                perms = perms | stat.S_IXUSR
+
+            tgtdir = os.path.dirname(tgt)
+            if not os.path.exists(tgtdir):
+                os.makedirs(tgtdir, mode=0700)
+            fp = file(tgt, 'wb')
+            fp.write(zf.read(path))
+            fp.close()
+            os.chmod(tgt, perms)
+        zf.close()
+        self.__is_zipped = False
+        self.__package_root_dir = destdir
+
+        # <<fold 
         
     def rootDir(self): # fold>>
         """
         @description returns the root directory of the package, as absolute path.
         @return a string with the package root directory absolute path
         """
+        if self.__is_zipped:
+            self._unpack()
         return self.__package_root_dir
         # <<fold
     def executableEntryPoints(self): # fold>>
@@ -303,7 +383,7 @@ class Package:
         return entry_points.keys()
         # <<fold
     def versionedName(self): # fold>>
-        return os.path.splitext(os.path.basename(self.rootDir()))[0]
+        return self.__versioned_name
         # <<fold
     def name(self): # fold>>
         return Utils.qualifiedNameComponents(self.versionedName())[0]

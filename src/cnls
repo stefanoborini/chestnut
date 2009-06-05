@@ -28,37 +28,10 @@ def usage():
     print ""
 
 
-class Lister:
+class LongStyleOutput:
     def __init__(self):
-        self.__long_style=False
-        self.__description_in_short_printing=False
-    def listAll(self):
-        resolver = PackageResolver.PackageResolver()
-        package_list = resolver.allPackages()
-        for package in package_list:
-            self._printPackage(package)
-
-    def setLongStyle(self, long_style):
-        self.__long_style = long_style
-    def enableDescriptionsInShortPrinting(self, flag):
-        self.__description_in_short_printing = flag
-
-    def listPackages(self, package_names):
-        resolver = PackageResolver.PackageResolver()
-        all_packages_versioned_names = [ x.versionedName() for x in resolver.allPackages() ]
-
-        for package_name in package_names:
-            filtered = fnmatch.filter(all_packages_versioned_names, package_name) 
-
-            if len(filtered) == 0:
-                print package_name+" : package not found"
-                continue
-            for versioned_name in filtered:
-                name, version = _splitVersionedName(versioned_name)
-                package = resolver.find(name, version)
-                self._printPackage(package)
-                
-    def _printPackage(self, package):
+        pass
+    def _getFlags(self, package):
         flags=""
             
         if package.isRunnable():
@@ -80,49 +53,107 @@ class Lister:
             pass
         if len(executable_entry_points) > 0:
             flags=flags+"m"
+        return flags
+    def output(self, package):
 
-        if self.__long_style:
-            print package.versionedName()+":"
-            description = package.description() 
-            if description is None:
-                description = "(no description)"
-            print "    Description: "+description
-            print "    Flags: "+flags
-            print "    Location: "+package.rootDir()
-            if package.isDeprecated():
-                print "    Deprecated: "+package.deprecationMessage()
+        print package.versionedName()+":"
+        description = package.description() 
+        if description is None:
+            description = "(no description)"
+        print "    Description: "+description
+        print "    Flags: "+self._getFlags(package)
+        print "    Location: "+package.rootDir()
+        if package.isDeprecated():
+            print "    Deprecated: "+package.deprecationMessage()
 
-            if len(package.executableEntryPoints()) > 0:
-                print "    Executable entry points:"
-                for entry_point in package.executableEntryPoints():
-                    if entry_point == package.defaultExecutableGroupEntryPoint():
-                        default_flag="(default)"
-                    else:
-                        default_flag=""
-                    description = package.executableDescription(entry_point) 
-                    if description is None:
-                        description = "(no description)"
-                    print "        "+entry_point+" "+default_flag+" : "+description
-                    if package.isExecutableDeprecated(entry_point):
-                        print "        "+" "*len(entry_point)+" "+" "*len(default_flag)+"   "+"Deprecated : "+package.executableDeprecationMessage(entry_point)
-    
-            if len(package.resourceEntryPoints()) > 0:
-                print "    Resource entry points:"
-                for entry_point in package.resourceEntryPoints():
-                    description = package.resourceDescription(entry_point)
-                    if description is None:
-                        description = "(no description)"
-                    print "        "+entry_point+" : "+description
-                    if package.isResourceDeprecated(entry_point):
-                        print "        "+" "*len(entry_point)+" "+"   "+"Deprecated : "+package.resourceDeprecationMessage(entry_point)
-        else:
-            if self.__description_in_short_printing is False:
-                print package.versionedName()
-            else:
-                if package.description() is None:
-                    print package.versionedName()+" : (no description)"
+        if len(package.executableEntryPoints()) > 0:
+            print "    Executable entry points:"
+            for entry_point in package.executableEntryPoints():
+                if entry_point == package.defaultExecutableGroupEntryPoint():
+                    default_flag="(default)"
                 else:
-                    print package.versionedName()+" : "+package.description()
+                    default_flag=""
+                description = package.executableDescription(entry_point) 
+                if description is None:
+                    description = "(no description)"
+                print "        "+entry_point+" "+default_flag+" : "+description
+                if package.isExecutableDeprecated(entry_point):
+                    print "        "+" "*len(entry_point)+" "+" "*len(default_flag)+"   "+"Deprecated : "+package.executableDeprecationMessage(entry_point)
+
+        if len(package.resourceEntryPoints()) > 0:
+            print "    Resource entry points:"
+            for entry_point in package.resourceEntryPoints():
+                description = package.resourceDescription(entry_point)
+                if description is None:
+                    description = "(no description)"
+                print "        "+entry_point+" : "+description
+                if package.isResourceDeprecated(entry_point):
+                    print "        "+" "*len(entry_point)+" "+"   "+"Deprecated : "+package.resourceDeprecationMessage(entry_point)
+
+class ShortStyleOutput:
+    def __init__(self, with_description):
+        self.__with_description = with_description
+        pass
+    def output(self,package):
+        if self.__with_description is False:
+            print package.versionedName()
+        else:
+            if package.description() is None:
+                print package.versionedName()+" : (no description)"
+            else:
+                print package.versionedName()+" : "+package.description()
+
+class EntryPointOutput:
+    def output(self,package):
+        print package.versionedName()
+        if len(package.executableEntryPoints()) > 0:
+            for entry_point in package.executableEntryPoints():
+                print package.versionedName()+"/"+entry_point
+
+        if len(package.resourceEntryPoints()) > 0:
+            for entry_point in package.resourceEntryPoints():
+                print package.versionedName()+"/"+entry_point
+        
+class Lister:
+    def __init__(self):
+        self.__long_style=False
+        self.__description_in_short_printing=False
+        self.__listing_entry_points = False
+    def listAll(self):
+        resolver = PackageResolver.PackageResolver()
+        package_list = resolver.allPackages()
+        for package in package_list:
+            self._printPackage(package)
+
+    def setLongStyle(self, long_style):
+        self.__long_style = long_style
+    def enableDescriptionsInShortPrinting(self, flag):
+        self.__description_in_short_printing = flag
+    def enableListingEntryPoints(self, flag):
+        self.__listing_entry_points = flag
+
+    def listPackages(self, package_names):
+        resolver = PackageResolver.PackageResolver()
+        all_packages_versioned_names = [ x.versionedName() for x in resolver.allPackages() ]
+
+        for package_name in package_names:
+            filtered = fnmatch.filter(all_packages_versioned_names, package_name) 
+
+            if len(filtered) == 0:
+                print package_name+" : package not found"
+                continue
+            for versioned_name in filtered:
+                name, version = _splitVersionedName(versioned_name)
+                package = resolver.find(name, version)
+                self._printPackage(package)
+                
+    def _printPackage(self, package):
+        if self.__long_style:
+            LongStyleOutput().output(package)
+        elif self.__listing_entry_points:
+            EntryPointOutput().output(package)
+        else:
+            ShortStyleOutput(self.__description_in_short_printing).output(package)
        
 def _splitVersionedName(versioned_name):
     parts = versioned_name.split("-",1)
@@ -141,7 +172,7 @@ def _splitVersionedName(versioned_name):
 
     
 if __name__ == "__main__":
-    options, args=getopt.getopt(sys.argv[1:], "ldh", ["long","description","help"])
+    options, args=getopt.getopt(sys.argv[1:], "ldeh", ["long","description","entry-points","help"])
     lister=Lister()
 
     for opt in options:
@@ -149,6 +180,8 @@ if __name__ == "__main__":
             lister.setLongStyle(True)
         if opt[0] == "-d" or opt[0] == "--description":
             lister.enableDescriptionsInShortPrinting(True)
+        if opt[0] == "-e" or opt[0] == "--entry-points":
+            lister.enableListingEntryPoints(True)
         if opt[0] == "-h" or opt[0] == "--help":
             usage()
             sys.exit(0)

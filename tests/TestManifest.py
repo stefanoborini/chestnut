@@ -16,6 +16,11 @@ class TestManifest(unittest.TestCase):
         manifest = Manifest.Manifest(os.path.join(script_path,"validManifests","manifest.xml"))
         self.assertEqual(manifest.__class__, Manifest.Manifest)
         # <<fold
+    def testInitializationFromString(self): # fold>>
+        string = file(os.path.join(script_path,"validManifests","manifest.xml"), "r").read()
+        manifest = Manifest.Manifest(string=string)
+        self.assertEqual(manifest.__class__, Manifest.Manifest)
+        # <<fold
     def testInvalidManifestNoContents(self): # fold>>
         self.assertRaises( Manifest.ParseException, Manifest.Manifest, os.path.join(script_path,"invalidManifests","no_contents.xml"))
         # <<fold
