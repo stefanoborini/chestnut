@@ -13,7 +13,7 @@ We define Package (version 1.0) a directory with the following characteristics
 
 We also defined the following nomenclature:
 \begin{itemize}
-\item an \kw{executable} is a binary or script that can be executed on a given platform, as defined by `uname`-`uname -m`
+\item an \kw{executable} is a binary or script that can be executed on a given platform, as defined by `uname`-`uname -m` or "noarch"
 \item a \kw{resource} is a file that is meaningful on a given platform, as defined as before
 \item an \kw{executable group} is a collection of platform-dependent executables. The executable group can be referred by means of a single, unique label (\kw{entry point}).
 \item an \kw{resource group} is a collection of platform-dependent resources. The resource group can be referred by a single, unique label (entry point).
@@ -76,16 +76,18 @@ DefaultExecutableGroupEntryPoint (optional) for the package. The entry point nam
 specified as default entry point must also be defined for an executable group,
 otherwise the package manifest is not correct, and the package is not a
 package. It can also contain a free-text Description (optional) for the package.
+As of chestnut 2.1.0, the optional section (Deprecated) is also read.
+It contains a message to the user abot the deprecation of a package.
 
 The Contents section (mandatory) describes the actual contents of the package. There are two
 possible subelements to the Content element: ExecutableGroup and ResourceGroup.
-both of them have a single mandatory attribute which is the entry point name, a
+both of them have a mandatory attribute which is the entry point name, a
 unique name identifying it. If some entry point is not specified, the entry is
 considered corrupted and therefore discarded.
 
 The ExecutableGroup element contains Executable elements, one for each platform.
 This way it is possible to have multiple architectures into the same package,
-and the correct one will be ran. The Path element has a single attribute
+and the correct one will be run. The Path element has a single attribute
 "type", which can be one of the following:
 \begin{itemize}
 \item standard: means that the path is relative to the package subdirectory "Executables/platform\_string" (ie: Executables/Linux-ia64)
