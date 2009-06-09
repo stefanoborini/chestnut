@@ -1,0 +1,83 @@
+_cnrun() 
+{
+    local cur prev 
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+
+    #
+    #  Complete the arguments to some of the basic commands.
+    #
+    case "${prev}" in
+    cnrun)
+        if test "x`echo ${cur} | awk '{print substr($0,length,1)}'`" == "x/"; then
+            local entry_points=$(for x in `cnls --entry-points |grep "${cur}"`; do echo ${x} ; done )
+            COMPREPLY=( $(compgen -o nospace -W "${entry_points}" -- ${cur}) )
+            return 0
+        else
+            local packages=$(for x in `cnls --entry-points |grep -v '/'`; do echo ${x} ; done )
+            COMPREPLY=( $(compgen -W "${packages}" -- ${cur}) )
+            return 0
+        fi
+        ;;
+    *)
+        ;;
+    esac
+
+   return 0
+}
+_cnls() 
+{
+    local cur prev opts 
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    opts="-l --long -d --description -e --entry-points -h --help"
+
+    #
+    #  Complete the arguments to some of the basic commands.
+    #
+    case "${prev}" in
+    cnls)
+        local packages=$(for x in `cnls --entry-points |grep -v '/'`; do echo ${x} ; done )
+        COMPREPLY=( $(compgen -W "${packages} ${opts}" -- ${cur}) )
+        return 0
+        ;;
+    *)
+        ;;
+    esac
+
+   local packages=$(for x in `cnls --entry-points |grep -v '/'`; do echo ${x} ; done )
+   COMPREPLY=( $(compgen -W "${packages} ${opts}" -- ${cur}) )
+   return 0
+}
+_cnrespath() 
+{
+    local cur prev 
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    #
+    #  Complete the arguments to some of the basic commands.
+    #
+    case "${prev}" in
+    cnls)
+        local packages=$(for x in `cnls --entry-points`; do echo ${x} ; done )
+        COMPREPLY=( $(compgen -W "${packages}" -- ${cur}) )
+        return 0
+        ;;
+    *)
+        ;;
+    esac
+
+   local packages=$(for x in `cnls --entry-points`; do echo ${x} ; done )
+   COMPREPLY=( $(compgen -W "${packages}" -- ${cur}) )
+   return 0
+}
+complete -F _cnrun cnrun
+complete -F _cnls cnls
+complete -F _cnrespath cnrespath
+
