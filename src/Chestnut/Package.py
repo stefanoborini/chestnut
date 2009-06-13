@@ -177,6 +177,8 @@ class Package:
         # add the environment variable containing the package base directory.
         # we use this and not os.setenv because os.setenv does not export to child processes.
         environment["PACKAGE_ROOT_DIR"]=self.rootDir()
+        environment["CN_ROOT_DIR"]=self.rootDir()
+        environment["CN_ENTRY_POINT"] = entry_point
 
         # FIXME: this code is heavily repeated. refactor it out!
         executable_group = self.__manifest.executableGroup(entry_point)
@@ -187,7 +189,8 @@ class Package:
                 if Platform.isCompatibleWith(exe.platform()):
                     executable = exe
                     break
-       
+
+        environment["CN_RUN_ARCH"]=executable.platform() 
         executable_absolute_path = _computeExecutableAbsolutePath(self.rootDir(), executable.path(), executable.pathType(), executable.platform())
 
         interpreter = executable.interpreter()

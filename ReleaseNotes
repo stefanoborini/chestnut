@@ -9,6 +9,10 @@ This is the first public release of Chestnut Package Manager.  Please report
 bugs to the maintainer with copy of the error, and circumstances to reproduce
 the bug.
 
+Changes in Version 2.2.0:
+
+- added support for compressed .nut files
+
 Changes in Version 2.1.0:
 
 - better ouput for cnrun when the program is not found.
