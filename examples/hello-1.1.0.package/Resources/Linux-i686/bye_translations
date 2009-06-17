@@ -1,0 +1,10 @@
+# translations for platform noarch.
+# This is apparently unusual, as this is a plain text file. 
+# However, if you have binary files, they could happen to have
+# endianness issues or platform specific optimizations, which 
+# make them unportable to another platform
+it:ci vediamo (on Linux-i686)
+en:bye (on Linux-i686)
+es:hasta la vista (on Linux-i686)
+de:Auf Wiedersehen (on Linux-i686)
+fr:au revoir (on Linux-i686)

@@ -1,0 +1,10 @@
+# translations for platform noarch.
+# This is apparently unusual, as this is a plain text file. 
+# However, if you have binary files, they could happen to have
+# endianness issues or platform specific optimizations, which 
+# make them unportable to another platform
+it:ciao (on noarch)
+en:hello (on noarch)
+es:hola (on noarch)
+de:hallo (on noarch)
+fr:salut (on noarch)

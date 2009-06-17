@@ -1,0 +1,10 @@
+# translations for platform noarch.
+# This is apparently unusual, as this is a plain text file. 
+# However, if you have binary files, they could happen to have
+# endianness issues or platform specific optimizations, which 
+# make them unportable to another platform
+it:ci vediamo (on noarch)
+en:bye (on noarch)
+es:hasta la vista (on noarch)
+de:Auf Wiedersehen (on noarch)
+fr:au revoir (on noarch)
