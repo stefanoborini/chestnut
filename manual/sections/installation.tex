@@ -1,0 +1,48 @@
+\section{Installation}
+To install Chestnut Package Manager you need Python 2.4 or later installed on
+your machine. Installation is very simple. Unpack the tar archive
+
+\begin{verbatim}
+tar xzvf Chestnut-2.1.0.tar.gz
+\end{verbatim}
+
+Then run the installation script
+
+\begin{verbatim}
+python setup.py install --home=$HOME
+\end{verbatim}
+
+Finally, set the following environment variables
+
+\begin{verbatim}
+export PATH="${PATH}:${HOME}/bin"
+export PACKAGE_SEARCH_PATH=$HOME/ChestnutPkgs:/opt/ChestnutPkgs
+\end{verbatim}
+
+It is suggested that you add these lines into your \verb+.bash_profile+, so that they
+get parsed every time you login.
+
+The first line makes sure you have \verb+$HOME/bin+ in your \verb+PATH+ environment
+variable. This line could be redundant, as this setting could already be
+present in your system. Adding it twice does not really hurt.  After the
+installation is done, you will have three executables in your \verb+$HOME/bin+
+directory: \verb+cnrun+, \verb+cnls+ and \verb+cnpath+.
+
+The second line specifies the directories where packages will be searched. A
+possible choice for personal packages is \verb+$HOME/ChestnutPkgs+. You
+can also have system-wide directories, for example in \verb+/opt/ChestnutPkgs+,
+for example. Higher priority is given to the first directories in the list, and
+lower priorities to the following ones (exactly as in \verb+PATH+). You are free to
+add more if you want.
+
+Finally you need to create the package directories. For the system-wide
+directory, you need superuser privileges.  If you don't have superuser rights
+on your system you can skip the creation of the system-wide directory and run
+only the last command.
+
+\begin{verbatim}
+$ sudo mkdir -p /opt/ChestnutPkgs
+$ sudo chmod 777 /opt/ChestnutPkgs
+$ mkdir $HOME/ChestnutPkgs
+\end{verbatim}
+

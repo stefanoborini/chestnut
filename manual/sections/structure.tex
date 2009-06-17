@@ -1,0 +1,187 @@
+\section{Package structure}
+
+\subsection{The package layout}
+
+Chestnut Packages can be either 
+\begin{enumerate}
+\item special directories with a special name, content and structure.
+\item a zipfile with a proper name, containing the same data as the above directory (from Chestnut version 2.2.0) 
+\end{enumerate}
+
+It is relocatable anywhere
+in the system if the contained executables are relocatable, and promotes
+self-contained programs. Packages are stored in one or more directories 
+normally designated for the role, in general a system-wide directory and a
+personal one in the user home directory. 
+
+The pa
+The central essence of a package lays in its particular name, and its particular structure.
+
+\subsection{The manifest}
+The package describes itself through an XML file called the manifest.
+A manifest.xml file in the base directory of the package describes the package
+contents and meta information about executables, resources and so on. It
+explicitly exposes the public interface to the internals of the package.
+
+The current manifest file version 1.0 has a Meta section, and a Contents section. 
+The Meta section is optional and contains metainformation about the package as a whole.
+
+The Content section is mandatory. It hosts two types of xml elements:
+ExecutableGroup and ResourceGroup.  They are almost similar, except that one
+defines Executable entry points, and the other Resource entry points.
+
+        <ExecutableGroup entryPoint="hello" description="Prints hello in the specified language">
+            <Executable>
+                <Platform>Linux-i686</Platform>
+                <Interpreter>bash</Interpreter>
+                <Path type="standard">hello</Path>
+            </Executable>
+            <Executable>
+                <Platform>Darwin-Power Macintosh</Platform>
+                <Interpreter>bash</Interpreter>
+                <Path type="standard">hello</Path>
+            </Executable>
+            <Executable>
+                <Platform>noarch</Platform>
+                <Interpreter>bash</Interpreter>
+                <Path type="standard">hello</Path>
+            </Executable>
+        </ExecutableGroup>
+
+Every executable group must have the entryPoint attribute defined as a unique
+string.  An optional description can be specified as well, and will be printed
+when \verb+cnls -l+ is invoked. 
+
+An executable group contains Executable entries,
+one for each platform. This allows to specify the same program compiled for
+different architectures.  Chestnut will automatically choose the proper
+executable, depending on the architecture of the machine it is running on. If a
+compatible entry for the architecture is not found, the "noarch" platform is
+tried, if available.  This feature is very useful if you have a NFS mounted
+Package repository, with different architectures accessing this NFS. When the
+entry point is executed,
+the proper executable will be used.
+
+Each executable entry must specify a Platform and a Path. Interpreter is
+optional, and it's the interpreter which will be used for scripts. 
+\footnote{As of version 2.2, the interpreter must not contain a path to the interpreter,
+just the name. It is assumed that the interpreter can be found on the system
+through regular PATH. It is also not possible to specify options. This
+restriction will be removed in 2.3}
+The Platform must contain the result of the command \verb+echo `uname`-`uname -m`+, or the string \verb+noarch+
+The Path specifies the location of the associated executable. It has a mandatory attribute type which can have one
+of the following values
+
+\begin{enumerate}
+\item standard: the specified executable name is searched into the standard package
+subdirectory “Executables/`uname`-`uname -m`/” (eg. “Executables/Linux-i686/”).
+\item package\_relative: the executable is searched under the package
+subdirectory, but the actual relative path is up to you to decide.
+\item absolute: the executable can be anywhere on the filesystem.  The full,
+absolute path must be provided. Useful to create “virtual packages”, and let
+unpackaged programs be accessible through the Chestnut interface 
+\end{enumerate}
+
+For an executable to be properly recognized, the following conditions must be met:
+\begin{enumerate}
+\item the executable must exists and accessible at the specified path
+\item the executable must be executable (+x)
+\end{enumerate}
+or
+\begin{enumerate}
+\item the executable must exists and accessible at the specified path
+\item the interpreter must be available and executable
+\end{enumerate}
+
+If any of these conditions does not hold, the entry will not be available.
+
+The exact same structure exists for ResourceGroups. Resource section does not accept Interpreter of course.
+A platform must be specified for resources as well (some data can be platform
+dependent, like in case of endianness issues, or with data files optimized for
+a specific platform). In general, however, the noarch platform will be used.
+
+\subsection{Additional feature: default entry point}
+
+In the manifest Meta section, it is possible to specify a default executable group to be executed.
+
+\begin{verbatim}
+<Meta>
+      <DefaultExecutableGroupEntryPoint>hello</DefaultExecutableGroupEntryPoint>
+</Meta>
+\end{verbatim}
+
+Of course, the executable group entry point must exist.
+
+\subsection{Additional feature: deprecation of entry points and packages}
+It is possible to document an entry point as deprecated with the \verb+deprecated+ attribute
+\begin{verbatim}
+<Contents>
+      <ExecutableGroup entryPoint="hello" deprecated="deprecation message">
+<...>
+\end{verbatim}
+
+It is also possible to document a whole package as deprecated with the Deprecated tag in the Meta section
+\begin{verbatim}
+<Meta>
+    <Deprecated>deprecation message</Deprecated>
+<...>
+\end{verbatim}
+
+\subsection{Additional feature: zipped packages}
+
+\new{2.2.0}: you can create a zip archive of the contents of a package directory. 
+
+
+In order to create your package, you have to:
+
+   1. have a relocatable application, or write your application so to take advantage of the Chestnut Package Manager concept
+   2. put executables, resources and other stuff into a properly named .package directory
+   3. write a manifest file
+   4. That’s it! You can deploy your package.
+
+5.1 Relocatable application
+
+The application does not have to be dependent at compile time on a specific
+hardcoded path to get its static resources (eg. stuff like icons, template
+documents, default configuration files etc). To get the current package
+location you can get the environment variable PACKAGE\_ROOT\_DIR. Chestnut sets
+this variable before running the package to the current absolute path of the
+package directory, so when this variable is set, you can conclude that the
+application is running in a packaged environment. If the package is moved
+somewhere else, the value will be the proper one for the new location.
+
+Applications that do not access other files, like applications getting input from stdin, or that require the file to access through a command line argument are relocatable.
+
+What about libraries? if your application is using system libraries, the dynamic linker will do the job no matter where the application is. If the application is using private libraries stored into the package, and some environment variable must be exported to make them accessible, you can write a wrapper script that first export these variables, and then runs the application.
+5.2 Putting Executables and Resources in the package
+
+The package must have a standardized name, otherwise it will not be recognized as a package. The standard is “name-major.minor.patchlevel.package”, eg. foo-1.2.5.package. Future releases will probably support different naming schemes, like “foo-1.3beta.package”, but it’s not guaranteed.
+
+The Executables and Resources directories are standard, but you are by no means
+obliged to use them to make your executables and resources visible to Chestnut.
+You can create your own directories, and specify the Path type
+“package\_relative” in the manifest.xml file.
+
+However, using the standard packages is preferred. You are free to use other directories (for example, I used Libraries/architecture/language to store private libraries, eg. Libraries/Linux-i686/perl/) until a preferred standardized naming arises from de-facto usage.
+
+Remember that, for an executable to run successfully, the platform string as specified in the package must match the result of the command “uname” and “uname -m”, separated by a single dash. Also, remember that the noarch fallback, if present, will be used if no platform specific executable is found.
+5.3 Writing a manifest file
+
+To write a manifest file, you can grab the hello-1.1.0.package manifest as a template. Remember that you can leave out the Meta section, if you don’t want to specify documentation and/or default entry point.
+
+Also, remember that you can skip the specification of the Interpreter, if the
+program is compiled, or if you want to execute it as a script with the shabang
+(\#!). In this case, make sure that the program has executable permission (chmod
++x), otherwise it will not be considered a valid Executable entry.  5.4
+Deployment
+
+Recursively copy or move the .package directory into one of the Package
+repository as defined by PACKAGE\_SEARCH\_PATH. Invoking cnls should show your
+package. If not, check accurately the manifest, 90\% of the time the problem
+resides there. Better debugging, and a tool to create and deploy packages will
+be target for future releases.
+
+
+
+
+

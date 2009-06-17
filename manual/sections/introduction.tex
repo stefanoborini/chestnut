@@ -1,0 +1,55 @@
+\section{Introduction}
+
+Welcome to the documentation of Chestnut Package Manager, version \version{}.
+Chestnut is a utility that allows you to organize programs and resource files
+in self-contained packages you can move transparently\footnote{conditions
+apply. See the rest of this documentation for more details} around in your
+filesystem (or even on different computer architectures).
+
+Quite often, a huge number of utilities and scripts can be present on our
+computers, each one performing from small to complex tasks.  All these
+executables reside somewhere on the local disk, or on an NFS shared disk.
+Referring to them via absolute or relative paths could introduce problems if
+you want to move them around. There can be different versions of the same
+program, or the same program must be made available for multiple architectures.
+In some cases, different executables can still be part of the same software,
+and it would be nice to have them accessible through a single entity. Finally,
+in some cases the previous condition does not hold only for executable programs, but also for data resources.
+
+We want to address the following issues, and we want to do it easily:
+
+\begin{itemize}
+\item \textbf{Versioning}: know which version of a given executable we are running, or resource
+we are getting
+\item \textbf{Path independence}: we don't want to depend on static paths to
+invoke a given executable, or to get a specific resource.
+\item \textbf{Encapsulation}: keep related executables and resources
+together as much as we can, potentially with their private helper libraries
+into a single, independent and fully contained entity.
+\item \textbf{Relocatability}: we want to be able to refer to both executables
+and data with a simple name, and let the system figure out where they are, when
+they are needed. If our targets are relocated, the lookup system should be easy
+to reconfigure to the new location, and no other intervention will be needed to
+restore the behavior of scripts invoking these executables.
+\item \textbf{Platform transparency}: we should be able to store many platform-dependent
+copies of an executable, and let the system figure out the correct one to invoke.
+\end{itemize}
+
+We don't want to use paths because they force us to keep a specific location
+for a given utility. To solve this problem, a possible solution is to rely on
+the famous PATH variable the shell uses to resolve the executable names.
+Although clever, it suffers from some drawbacks: 
+\begin{enumerate}
+\item it is difficult to do versioning (unless we name our executable properly)
+and to keep track of what is running.
+\item in order to make hundreds of scripts and programs accessible via PATH
+search, we need to put all the entries into the variable making it very long
+and difficult to manipulate
+\item PATH works only for executables. We would like to access data
+resources as well with the same mechanism.
+\end{enumerate}
+
+Chestnut is similar in some way to Application packages in NextStep/MacOSX
+and Java Archives. Executables, resources, and their libraries are put into a
+directory with a special name. A program, \textbf{cnrun} can be invoked to run
+a program packaged in this way. 
