@@ -4,3 +4,4 @@ include INSTALL
 include ReleaseNotes
 recursive-include manual *
 recursive-include examples *
+recursive-include addons *
