@@ -1,0 +1,79 @@
+\section{Advanced features}
+
+
+\subsection{cnls advanced usage}
+
+While using cnls, you can use globbing to list packages, but remember that you need to escape the symbols that could be interpreted by the shell.
+\begin{verbatim}
+$ cnls \*plot\*
+roseplot-1.1.0
+\end{verbatim}
+
+When performing long listing with the \verb+-l+ switch, additional
+information is printed in the form of one-letter case-sensitive flags.
+The presence of:
+    \begin{itemize}
+    \item an \verb+x+ means that the package contains executables
+    \item a \verb+r+ means that the package contains resources
+    \item a \verb+d+ means that the package has a default entry point for an
+    executable. This has consequences when you run it with cnrun.
+    \item a \verb+m+ means that the package has executable entry points
+    \textbf{other} than the default. With "other" we mean that if there's no
+    default, this flag is present also if you have only one executable entry
+    point.
+    \item a \verb+D+ means that the package is deprecated or contains deprecated entries.
+    \end{itemize}
+
+
+\subsection{cnrun advanced usage }
+
+It is possible to specify a package without or with a reduced definition of the
+version: in this case, the most recent version will be chosen. For example.
+having the following packages in our search path
+\begin{verbatim}
+foo-1.0.0
+foo-1.0.1
+foo-1.1.0
+foo-1.2.0
+foo-2.1.0
+\end{verbatim}
+\begin{itemize}
+\item calling \verb+cnrun foo+ will run foo-2.1.0
+\item calling \verb+cnrun foo-1+ will run foo-1.2.0
+\item calling \verb+cnrun foo-1.0+ will run foo-1.0.1
+\end{itemize}
+
+This is useful to use the most recent compatible version as soon as it's
+deployed, in particular when using the syntax \verb+cnrun foo-1+.  If you have
+multiple packages with the same name, the one that gets executed is the first
+that is found (honors the order specified in \verb+CN_PACKAGE_SEARCH_PATH+). 
+
+cnrun is totally transparent in terms of input/output. you can use it in
+unix pipelines, redirect the stdin or stdout, and pass options to the
+invoked program. You can even run standard unix programs (although there's
+apparently no real reason to do it, it is convenient to do so in some
+advanced circumstances). If the package is not found, cnrun will try to
+execute the program as in a standard shell PATH lookup. In other words, this
+will work transparently
+\begin{verbatim}
+$ cnrun ls -la | cnrun less
+\end{verbatim}
+
+Existing packages will take precedence, so the presence of a ls-1.0.0 package,
+for example, will execute this package instead of the \verb+ls+ command. Using
+the absolute path will work in any case against the regular command. The
+following will invoke \verb+ls+ even if a ls-1.0.0 package exists.
+\begin{verbatim}
+$ cnrun /bin/ls -la 
+\end{verbatim}
+
+\subsection{Bash autocomplete}
+
+As of version 2.2.0, a bash autocomplete script is provided in the addon
+directory. Simply source this script at startup to access useful autocompletion
+features for your bash prompt, for example with the following syntax
+\begin{verbatim}
+. $HOME/chestnut_bash_completion 
+\end{verbatim}
+When using cnrun and cnpath, using Tab will complete the package name and the
+entry point.
