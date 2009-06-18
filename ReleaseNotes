@@ -1,4 +1,4 @@
-Chestnut Package Manager release notes. Version 2.1.0
+Chestnut Package Manager release notes. Version 2.2.0
 -----------------------------------------------------
 
 Chestnut Package Manager is a utility to handle executables and resource files
@@ -11,7 +11,12 @@ the bug.
 
 Changes in Version 2.2.0:
 
-- added support for compressed .nut files
+- added support for compressed .nutz files
+- CN_PACKAGE_SEARCH_PATH has been added. it is checked before PACKAGE_SEARCH_PATH, which will be made deprecated at a later stage.
+- added .chestnut directory extension for packages (instead of .package, which will be made deprecated at a later stage)
+- The variables CN_ROOT_DIR, CN_ENTRY_POINT and CN_RUN_ARCH are now exported when a package is run. CN_ROOT_DIR supersedes PACKAGE_ROOT_DIR
+- cnls: added option -e to print all entry points for the packages
+- added autocompletion script for bash
 
 Changes in Version 2.1.0:
 
