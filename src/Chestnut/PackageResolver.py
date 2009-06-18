@@ -7,14 +7,21 @@ import os
 class PackageResolver:
     """
     @description Class dealing with the lookup of the packages in the special paths contained in the environment
-    @description PACKAGE_SEARCH_PATH. 
+    @description CN_PACKAGE_SEARCH_PATH. 
     """
     def __init__(self): # fold>>
-        package_search_path = os.getenv("PACKAGE_SEARCH_PATH")
-        if package_search_path is None:
-            self.__search_path_list = []
-        else:
+        self.__search_path_list = []
+
+        package_search_path = os.getenv("CN_PACKAGE_SEARCH_PATH")
+        if package_search_path is not None:
             self.__search_path_list = package_search_path.split(os.pathsep) 
+            return
+
+        # kept for compatibility. Will be removed 
+        package_search_path = os.getenv("PACKAGE_SEARCH_PATH")
+        if package_search_path is not None:
+            self.__search_path_list = package_search_path.split(os.pathsep) 
+
         # <<fold
     def find(self, name, version): # fold>>
         """
@@ -38,7 +45,7 @@ class PackageResolver:
         numeric_version = numeric_version + (0,)*(len(numeric_version)-longest_tuple_len)
 
         # we add a priority count because we don't want to loose the ordering precedence
-        # imposed by the PACKAGE_SEARCH_PATH, rearranging accidentally packages with the same versioned name.
+        # imposed by the CN_PACKAGE_SEARCH_PATH, rearranging accidentally packages with the same versioned name.
         # we add it negative, so when we sort and reverse the list, the first packages encountered
         # will have a higher value (lower in absolute value) and kept first in the list, so we can
         # just pick the first element of the filtered list and be sure it's the one we want.
@@ -62,12 +69,12 @@ class PackageResolver:
         # <<fold
     def allPackages(self): # fold>>
         """
-        @description scouts the PACKAGE_SEARCH_PATH and produces a list of all available (and sane) packages absolute paths.
+        @description scouts the CN_PACKAGE_SEARCH_PATH and produces a list of all available (and sane) packages absolute paths.
         @return a list of absolute paths to packages, in the order they are found
         """
        
         returned_list = []
-        # get all the packages found in PACKAGE_SEARCH_PATH
+        # get all the packages found in CN_PACKAGE_SEARCH_PATH
         for path_entry in self.__search_path_list:
             try:
                 dir_list=os.listdir(path_entry)
@@ -76,7 +83,7 @@ class PackageResolver:
             for package_dir_name in dir_list:
                 if os.path.splitext(package_dir_name)[1] != os.extsep+'package' \
                     and os.path.splitext(package_dir_name)[1] != os.extsep+"chestnut" \
-                    and os.path.splitext(package_dir_name)[1] != os.extsep+"nutshell":
+                    and os.path.splitext(package_dir_name)[1] != os.extsep+"nutz":
                     continue
                 try:
                     package = Package.Package(os.path.join(path_entry,package_dir_name))

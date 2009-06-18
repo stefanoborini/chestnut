@@ -25,7 +25,7 @@ class Package:
                                             )
                                     ) 
         self.__versioned_name = versioned_name
-        if extension not in [ os.extsep+'package', os.extsep+"chestnut", os.extsep+"nutshell"] :
+        if extension not in [ os.extsep+'package', os.extsep+"chestnut", os.extsep+"nutz"] :
             raise InitializationException("Invalid package extension "+extension)
         
         try: 
@@ -42,6 +42,9 @@ class Package:
                 int(v)
         except:
             raise InitializationException("Invalid name for package "+versioned_name)
+
+        if not os.path.exists(os.path.realpath(path)):
+            raise InitializationException("Unexistent path "+path)
 
         if os.path.isdir(os.path.realpath(path)):
             self.__package_root_dir=os.path.abspath(path)

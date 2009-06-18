@@ -1,0 +1,17 @@
+\section{What's new}
+
+Version 2.2.0:
+\begin{itemize}
+\item added support for compressed .nutz files
+\item \verb+CN_PACKAGE_SEARCH_PATH+ has been added. it is checked before \verb+PACKAGE_SEARCH_PATH+, which will be made deprecated at a later stage.
+\item added .chestnut directory extension for packages (instead of .package, which will be made deprecated at a later stage)
+\item The variables \verb+CN_ROOT_DIR+, \verb+CN_ENTRY_POINT+ and \verb+CN_RUN_ARCH+ are now exported when a package is run. \verb+CN_ROOT_DIR+ supersedes \verb+PACKAGE_ROOT_DIR+
+\item \verb+cnls+: added option \verb+-e+ to print all entry points for the packages
+\item added autocompletion script for bash
+\end{itemize}
+Version 2.1.0:
+\begin{itemize}
+\item better ouput for cnrun when the program is not found.
+\item added possibility to put a deprecation message
+\item fixed outstanding bugs
+\end{itemize}

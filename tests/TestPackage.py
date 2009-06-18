@@ -14,13 +14,18 @@ class TestPackage(unittest.TestCase):
         package = Package.Package(package_path)
         self.assertEqual(package.__class__, Package.Package)
         # <<fold
+    def testInitializationFromChestnutDir(self): # fold>>
+        package_path=os.path.join(script_path,"testPackageDir1/foo-1.0.0.chestnut") 
+        package = Package.Package(package_path)
+        self.assertEqual(package.__class__, Package.Package)
+        # <<fold
     def testInitializationZip(self): # fold>>
-        package_path=os.path.join(script_path,"testPackageDir2","foo-1.0.0.nutshell") 
+        package_path=os.path.join(script_path,"testPackageDir2","foo-1.0.0.nutz") 
         package = Package.Package(package_path)
         self.assertEqual(package.__class__, Package.Package)
         # <<fold
     def testIsRunnableZip(self): # fold>>
-        package_path=os.path.join(script_path,"testPackageDir2","foo-1.0.0.nutshell") 
+        package_path=os.path.join(script_path,"testPackageDir2","foo-1.0.0.nutz") 
         package = Package.Package(package_path)
         self.assertEqual(package.isRunnable(),True)
         # <<fold
@@ -42,6 +47,9 @@ class TestPackage(unittest.TestCase):
         self.assertRaises(Package.InitializationException, Package.Package, package_path)
 
         package_path=os.path.join(script_path,"invalidPackages/no_extension-1.0.0") 
+        self.assertRaises(Package.InitializationException, Package.Package, package_path)
+
+        package_path=os.path.join(script_path,"invalidPackages/unexistent-1.0.0.package") 
         self.assertRaises(Package.InitializationException, Package.Package, package_path)
         # <<fold
     def testIsRunnable(self): # fold>>

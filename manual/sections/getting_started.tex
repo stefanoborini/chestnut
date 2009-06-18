@@ -6,43 +6,35 @@ Having completed the setup, we start using Chestnut for the first time. From the
 copy the directory hello-1.0.0.package in your \verb+$HOME/ChestnutPkgs+ directory.
 
 \begin{verbatim}
-cd Examples
-cp -r hello-1.0.0.package $HOME/ChestnutPkgs/ 
+$ cd examples
+$ cp -r hello-1.0.0.package $HOME/ChestnutPkgs/ 
 \end{verbatim}
-
 With this command you just deployed your first package. 
-
 The command \verb+cnls+ displays a list of available packages.
-
 \begin{verbatim}
 $ cnls
 hello-1.0.0
 \end{verbatim}
-
 If you do not obtain this result, your setup is incorrect.
 
 You can get a little more information about what the program does by using the
 \verb+-d+ switch
-
 \begin{verbatim}
 $ cnls -d
 hello-1.0.0 : Prints a salutation message
 \end{verbatim}
-
-Or, if you are really curious, you can get even more information by using the -l switch
-
+Or, if you are really curious, you can get even more information by using the \verb+-l+ switch
 \begin{verbatim}
 $ cnls -l
 hello-1.0.0:
     Description: Prints a salutation message
     Flags: xd
-    Location: /Users/stefano/Packages/hello-1.0.0.package
+    Location: /Users/stefano/ChestnutPkgs/hello-1.0.0.package
     Executable entry points:
         hello (default) : Prints hello!
 \end{verbatim}
 
 The \verb+cnrun+ program allows you to execute the hello package for the very first time
-
 \begin{verbatim}
 $ cnrun hello-1.0.0
 hello!
@@ -50,15 +42,12 @@ hello!
 
 \subsection{Entry points and Resources}
 
-To proceed further you will have to download an improved version of hello, from
-here.
-
-Once you obtain the tar.gz file, unpack it so that the result is produced into
-a proper location where Chestnut can find it, for example by issuing
-
+To proceed further you will have to use the improved version hello-1.1.0, available in the examples directory.
 \begin{verbatim}
-tar -xzv -C $HOME/Packages -f hello-1.1.0.package.tar.gz
+$ cd examples
+$ cp -r hello-1.1.0.package $HOME/ChestnutPkgs/ 
 \end{verbatim}
+
 
 Now you can check if the package is correctly installed by issuing
 
@@ -67,7 +56,7 @@ $ cnls -l hello-1.1.0
 hello-1.1.0:
     Description: Contains utilities for various salutations
     Flags: xrdm
-    Location: /Users/stefano/Packages/hello-1.1.0.package
+    Location: /Users/stefano/ChestnutPkgs/hello-1.1.0.package
     Executable entry points:
         bye  : Prints bye in the specified language
         hello (default) : Prints hello in the specified language
@@ -75,12 +64,9 @@ hello-1.1.0:
         hello_translations : Translations for hello in various languages
         bye_translations : Translations for bye in various languages
 \end{verbatim}
-Here things are different. We will now quickly introduce the terminology of
-Chestnut. 
-
-An entry point is a named access into the package. If a package is a
-street, the entry point is the house number. Invoking \verb+cnrun+
-as done before, the entry point was not specified, and the default was used.
+To proceed further, Chestnut terminology has to be explained. An entry point is
+a named access into the package. If a package is a street, the entry point is
+the house number. 
 
 The above package has four entry points: bye, hello (which is set as the
 default), hello\_translations and bye\_translations. The first two are executable
@@ -90,41 +76,36 @@ meaning that they are assigned to files carrying no executable meaning, like
 for example datafiles we want to make accessible. This package therefore
 contains both executable programs and data.
 
-We can execute this package as before, using \verb+cnrun+. This
-time, the program can provide salutation in different languages, by specifying
-the proper command line argument. We can get it in italian for example
-
+We can execute this package as before, using \verb+cnrun+. If we do not specify
+a specific entry point, the default one is used.  This time, the program can
+provide salutation in different languages, by specifying the proper command
+line argument. We can get it in italian for example
 \begin{verbatim}
 $ cnrun hello-1.1.0 it
 Running for Darwin-Power Macintosh
-Current PACKAGE_ROOT_DIR is /Users/stefano/Packages/hello-1.1.0.package
+Current CN_ROOT_DIR is /Users/stefano/ChestnutPkgs/hello-1.1.0.package
 ciao (on Darwin-Power Macintosh)
 \end{verbatim}
 or in french
 \begin{verbatim}
 $ cnrun hello-1.1.0 fr
 Running for Darwin-Power Macintosh
-Current PACKAGE_ROOT_DIR is /Users/stefano/Packages/hello-1.1.0.package
+Current CN_ROOT_DIR is /Users/stefano/ChestnutPkgs/hello-1.1.0.package
 salut (on Darwin-Power Macintosh)
 \end{verbatim}
-With this invocation procedure we are currently executing the default executable entry point: \verb+hello+. 
-We can execute a different entry point with the following syntax
-
+To invoke a different entry point of the same package, the following syntax is used
 \begin{verbatim}
 $ cnrun hello-1.1.0/bye it
 Running for Darwin-Power Macintosh
-Current PACKAGE_ROOT_DIR is /Users/stefano/Packages/hello-1.1.0.package
+Current CN_ROOT_DIR is /Users/stefano/ChestnutPkgs/hello-1.1.0.package
 ci vediamo (on Darwin-Power Macintosh)
-\end{verbatim}
 
-\begin{verbatim}
 $ cnrun hello-1.1.0/bye fr
 Running for Darwin-Power Macintosh
-Current PACKAGE_ROOT_DIR is /Users/stefano/Packages/hello-1.1.0.package
+Current CN_ROOT_DIR is /Users/stefano/ChestnutPkgs/hello-1.1.0.package
 au revoir (on Darwin-Power Macintosh)
 \end{verbatim}
-
-As you can see, a different program is running now, the one associated to the \verb+bye+ entry point.
+In the above examples the program associated to the \verb+bye+ entry point is now running.
 
 If a default executable entry point is present, the package is said to be
 executable. If a package does not have a default executable entry point, then
@@ -132,46 +113,46 @@ an entry point must always be specified. A package can also contain
 no executable entry points at all (for example, for packages containing just resources).
 
 Resources have entry points as well, and they can used to obtain the current
-absolute path of the resource by means of the program \verb+cnpath+
-
+absolute path of the resource by means of the program \verb+cnpath+ (long line
+wrapped for presentation reasons) 
 \begin{verbatim}
 $ cnpath hello-1.1.0/hello_translations
-/Users/stefano/Packages/hello-1.1.0.package/Resources/Darwin-Power Macintosh/hello_translations
+/Users/stefano/ChestnutPkgs/hello-1.1.0.package/ \ 
+ Resources/Darwin-Power Macintosh/hello_translations
 \end{verbatim}
 
 \subsection{Relocation}
 
-Now, let’s try to move the hello package into another Package repository, for example in /opt/Packages.
+Chestnut helps you with minimizing the disruption of relocating packages
+around.  If you move the hello package into another repository, for
+example in \verb+/opt/ChestnutPkgs+, everything will still work, as far as
+\verb+CN_PACKAGE_SEARCH_PATH+ includes this directory as well.
 
-$ mv $HOME/Packages/hello-1.0.0.package /opt/Packages/
+\begin{verbatim}
+$ mv $HOME/ChestnutPkgs/hello-1.0.0.package /opt/ChestnutPkgs/
 $ cnrun hello-1.0.0
 hello!
-
-As you can see, everything works as before, but if you try to invoke cnls, this
-time will tell you a different story about the location of the package
-
 $ cnls -l
 hello-1.0.0:
     Description: Prints a salutation message
     Flags: xd
-    Location: /opt/Packages/hello-1.0.0.package
+    Location: /opt/ChestnutPkgs/hello-1.0.0.package
     Executable entry points:
         hello (default) : Prints hello!
+\end{verbatim}
 
-The package is now in another directory. We are not concerned about where the
-package is located when invoking cnrun. We are only concerned about the name
-(and version) of the package we want to invoke. In this sense, Chestnut acts in
-a similar way to the shell PATH variable: PATH removes the burden of knowing
-the absolute location of an executable on the filesystem. Chestnut removes the
-burden of knowing the absolute l ocation of a package on the filesystem. Both
-require you to define “magic directories” where their mechanism is actuated.
+You can see from the Location line that the package is now in another
+directory.  As said, Chestnut acts as the shell PATH variable: PATH removes the
+burden of knowing the absolute location of an executable on the filesystem.
+Chestnut removes the burden of knowing the absolute location of a whole package
+on the filesystem. Both require you to specify "magic directories" where this
+mechanism is actuated.
 
-
-If you happen to move the package somewhere else, you will get the correct absolute path of the resource
-
+The same result will be obtained for resources and the output of \verb+cnpath+
 \begin{verbatim}
-$ mv Packages/hello-1.1.0.package /opt/Packages/                   
+$ mv $HOME/ChestnutPkgs/hello-1.1.0.package /opt/ChestnutPkgs
 $ cnpath hello-1.1.0/hello_translations
-/opt/Packages/hello-1.1.0.package/Resources/Darwin-Power Macintosh/hello_translations
+/opt/ChestnutPkgs/hello-1.1.0.package/ \
+  Resources/Darwin-Power Macintosh/hello_translations
 \end{verbatim}
 

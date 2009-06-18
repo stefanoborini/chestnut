@@ -1,8 +1,8 @@
 \documentclass[a4paper,11pt,oneside]{article}
 \newcommand{\new}[1]{\textbf{(New in #1)}}
-\newcommand{\version}[1]{2.1.0}
+\newcommand{\version}{2.2.0}
 \author{Stefano Borini}
-\title{Chestnut Package Manager \version manual}
+\title{Chestnut Package Manager \version{} manual}
 \usepackage{geometry}
 \geometry{a4paper,tmargin=2cm,bmargin=2cm,lmargin=2cm,rmargin=2cm}
 \headsep=10mm
@@ -10,13 +10,11 @@
 \maketitle
 
 \input{sections/introduction.tex}
-\input{sections/installation.tex}
-\newpage
-\input{sections/getting_started.tex}
 \input{sections/whatsnew.tex}
-\newpage
+\input{sections/installation.tex}
+\input{sections/getting_started.tex}
+\input{sections/advanced_features.tex}
 \input{sections/structure.tex}
-\input{sections/usage.tex}
 \input{sections/quick_reference.tex}
 
 \end{document}

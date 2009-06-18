@@ -21,6 +21,7 @@ def usage():
     print "Options:"
     print "-l  :  Produces detailed information about the package"
     print "-d  :  When printing few details, each package is printed along its description"
+    print "-e  :  lists all the entry points for each package"
     print "-h  :  This help"
     print ""
     print "Remember to escape wildcards, otherwise they will be interpreted by the shell, eg."
