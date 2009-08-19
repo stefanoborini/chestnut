@@ -323,7 +323,6 @@ class Package:
         destdir = os.path.join(tempfile.gettempdir(), self.versionedName()+"-"+md_five)
 
         zf = zipfile.ZipFile(self.__zipfile_path, 'r')
-        print zf.namelist()
         for info in zf.infolist():
             path = info.filename
             if path.endswith("/"):
