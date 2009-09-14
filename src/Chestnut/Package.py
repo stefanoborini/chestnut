@@ -10,7 +10,10 @@ import re
 import stat
 import zipfile
 import tempfile
-import hashlib
+try:
+    import hashlib as md5
+except ImportError:
+    import md5    
 
 class InitializationException(Exception): pass
 class NotRunnableException(Exception): pass
@@ -317,7 +320,7 @@ class Package:
         # <<fold
     def _unpack(self): # fold>>
         f = file(self.__zipfile_path, "rb")
-        md_five = hashlib.md5(f.read()).hexdigest()
+        md_five = md5.md5(f.read()).hexdigest()
         f.close()
 
         destdir = os.path.join(tempfile.gettempdir(), self.versionedName()+"-"+md_five)
