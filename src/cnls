@@ -10,18 +10,20 @@ import fnmatch
 script_path=os.path.abspath(sys.path[0]); sys.path.append(os.path.abspath(os.path.join(script_path, "../lib/python")));
 
 from Chestnut import PackageResolver
+from Chestnut import Version
 
 def usage():
-    print "Chestnut Package Manager"
+    print "Chestnut Package Manager (version "+Version.CHESTNUT_VERSION+")"
     print "By Stefano Borini"
     print ""
-    print "Usage: "+os.path.basename(sys.argv[0])+" [-l|--long] [-d|--description] [-h|--help] [package name]"
+    print "Usage: "+os.path.basename(sys.argv[0])+" [-V|--version] [-l|--long] [-d|--description] [-h|--help] [package name]"
     print ""
     print "Produces a list of available packages matching the package name or a glob pattern."
     print "Options:"
     print "-l  :  Produces detailed information about the package"
     print "-d  :  When printing few details, each package is printed along its description"
-    print "-e  :  lists all the entry points for each package"
+    print "-e  :  Lists all the entry points for each package"
+    print "-V  :  Print the version"
     print "-h  :  This help"
     print ""
     print "Remember to escape wildcards, otherwise they will be interpreted by the shell, eg."
@@ -173,10 +175,18 @@ def _splitVersionedName(versioned_name):
 
     
 if __name__ == "__main__":
-    options, args=getopt.getopt(sys.argv[1:], "ldeh", ["long","description","entry-points","help"])
+    try:
+        options, args=getopt.getopt(sys.argv[1:], "Vldeh", ["version","long","description","entry-points","help"])
+    except getopt.GetoptError, e:
+        print os.path.basename(sys.argv[0])+": "+e.msg
+        sys.exit(1)
+
     lister=Lister()
 
     for opt in options:
+        if opt[0] == "-V" or opt[0] == "--version":
+            print "chestnut-"+Version.CHESTNUT_VERSION
+            sys.exit(0)
         if opt[0] == "-l" or opt[0] == "--long":
             lister.setLongStyle(True)
         if opt[0] == "-d" or opt[0] == "--description":

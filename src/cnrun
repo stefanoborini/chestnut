@@ -4,18 +4,22 @@
 
 import sys
 import os
+import getopt
 
 script_path=os.path.abspath(sys.path[0]); sys.path.append(os.path.abspath(os.path.join(script_path, "../lib/python")));
 
 from Chestnut import PackageResolver
-
 from Chestnut import Utils
+from Chestnut import Version
 
 def usage():
-    print "Chestnut Package Manager (version 2.1.0)"
+    print "Chestnut Package Manager (version "+Version.CHESTNUT_VERSION+")"
     print "By Stefano Borini"
     print ""
-    print "Usage: "+os.path.basename(sys.argv[0])+" PackageName[-version][/entryPoint]"
+    print "Usage: "+os.path.basename(sys.argv[0])+" [-h|--help] [-V|--version] PackageName[-version][/entryPoint]"
+    print ""
+    print " -h  : This help"
+    print " -V  : Prints the chestnut version"
     print ""
     print "Run the package default entry point, or a specific entry point as specified."
     print "Examples:"
@@ -66,5 +70,22 @@ if len(sys.argv) < 2:
     sys.exit(0)
 
 if __name__ == "__main__":
+    try:
+        options, args=getopt.getopt(sys.argv[1:], "Vh", ["version","help"])
+    except getopt.GetoptError, e:
+        print os.path.basename(sys.argv[0])+": "+e.msg
+        sys.exit(1)
+
+    for opt in options:
+        if opt[0] == "-V" or opt[0] == "--version":
+            print "chestnut-"+Version.CHESTNUT_VERSION
+            sys.exit(0)
+        if opt[0] == "-h" or opt[0] == "--help":
+            usage()
+            sys.exit(0)
+
     runner=Runner()
     runner.run(sys.argv[1], sys.argv[2:])
+
+
+

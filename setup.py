@@ -4,7 +4,7 @@
 from distutils.core import setup
 
 setup(name='Chestnut',
-      version='2.2.0',
+      version='2.2.1',
       author="Stefano Borini",
       author_email="moc.liamg@tuntsehc+inirob.onafets",
       url="http://chestnut.sourceforge.net",
