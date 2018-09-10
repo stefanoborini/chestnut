@@ -1,0 +1,9 @@
+# this is a list of the package list to generate
+# these packages go into the global "system wide package repository
+../../daltonCalcs/tags/1.5.1
+../../csvUtils/tags/1.2.1
+../../zmatGenerators/tags/1.0.0
+../../zmatGenerators/tags/2.0.1
+../../daltonParsers/tags/3.4.3
+../../moldb/tags/1.2.0
+../../zmat2input/tags/1.1.0

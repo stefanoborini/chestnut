@@ -1,0 +1,357 @@
+#!/usr/bin/env python
+
+import sys
+import os
+import getopt
+import filecmp
+import glob
+
+VERSION="1.1.0"
+
+def usage():
+    print "Usage : "+os.path.basename(sys.argv[0])+" [--build_only] [--force_overwrite] [--install_dir=directory] package_list_file" 
+    print ""
+    print "Builds or installs the packages from a list of directories into a specified directory,"
+    print "using the proper package-install make target."
+    print ""
+    print "--force_overwrite"
+    print "  By default, the installer does not perform overwriting if another package is found"
+    print "  on the install directory."
+    print "  When this happens, a check of the md5 of all the files between the two packages"
+    print "  is performed. If a difference is found, a FAIL is reported and no action is taken."
+    print "  This could be due to either unauthorized changes in the installed package,instead"
+    print "  of the source code in subversion, or a change in the subversion that overwrites an"
+    print "  old package (like when you are developing new features). Both cases must be checked"
+    print "  accurately."
+    print "  If no difference is found, no action is taken anyway, but a WARN is reported."
+    print "  To force the install, you can specify the flag --force. This will perform the make package-install"
+    print "  anyway, hopefully erasing the package with no mercy, leaving no survivors seeking for"
+    print "  vengeance afterwards."
+    print ""
+    print "--build_only"
+    print "  only performs build, do not install the packages"
+    print "" 
+    print "--install_dir=directory"
+    print "  Specifies the directory where to install the built packages"
+    print ""
+    print "--nutz"
+    print "  Create and install nutz files instead of .package directories"
+    print ""
+    print "Author: Stefano Borini (stefano.borini at gmail.com)"
+    print "License: BSD no adverts"
+    print "Version : "+VERSION
+
+
+ESC = chr(27)
+RED = ESC + "[31;1m"
+GREEN = ESC + "[32;1m"
+YELLOW = ESC + "[33;1m"
+END_COLOR=ESC+"[0m"
+
+    
+def colored(string, color):
+    """
+    Return an ANSI colored string. Available colors are RED, GREEN, YELLOW
+    """
+    return color+string+END_COLOR
+
+
+def absolutizeAgainstScriptPath(path):
+    """
+    gets the absolute path of something described relative to the script directory
+    (NOT the current working directory, the directory where this script lives in)
+    """
+    script_dir = sys.path[0]
+
+    if not os.path.isabs(path):
+        return os.path.abspath(os.path.join(script_dir,path))
+    else:
+        return path
+   
+
+
+class PackageReleaser:
+    def __init__(self):
+        pass
+    def run(self, package_list_path):
+        """
+        perform the actual hard work
+        """
+
+        if self.__build_only == False and self.__install_dir is None:
+            raise Exception("empty install dir")
+
+        package_list_file = file(package_list_path)
+
+        if self.__install_dir is not None:
+            absolute_install_dir = absolutizeAgainstScriptPath(self.__install_dir)
+        else:
+            absolute_install_dir = None
+
+        for entry in package_list_file:
+            if len(entry.strip()) == 0 or entry.strip()[0] == "#":
+                # skip comments and empty lines
+                continue
+
+            software_dir=absolutizeAgainstScriptPath(entry.strip())
+            print software_dir
+            _makeClean(software_dir)
+            _makePackage(software_dir)
+            if self.__build_nutz:
+                _makeNutz(software_dir)
+
+            if not self.__build_only:
+                if self.__build_nutz:
+                    nutz_list = glob.glob(os.path.join(software_dir,"*.nutz")) 
+
+                    install_deliverance = True
+                    
+                    for nutz in nutz_list:
+                        nutz_name = os.path.basename(nutz) 
+
+                        if os.path.isfile(os.path.join(absolute_install_dir, nutz_name)):
+                            if filecmp.cmp(os.path.join(absolute_install_dir, nutz_name), os.path.join(software_dir, nutz_name)):
+                                error_msg = colored("WARN", YELLOW)+ " : "+nutz_name+" already found in install dir, but they result equal. not overwritten"
+                                install_deliverance = False
+                                break
+                            else:
+                                error_msg = colored("FAIL", RED)+ " : "+nutz_name+" already found in install dir, and they are different! not overwritten"
+                                install_deliverance = False
+                                break
+
+                    if install_deliverance or self.__force_overwrite:
+                        _makeNutzInstall(software_dir, absolute_install_dir)
+                    else:
+                        print error_msg
+                else:
+                    # we need also to install.
+                    # could happen that we have multiple packages built by the same makefile. Unprobable, but still...
+                    # This means that we need to check the existence of all the packages, because if we issue a 
+                    # make package_install, all the packages will overwrite the current packages. 
+                    # therefore, before issuing the destructive make command, we need to check for full deliverance
+
+                    # get all the .package files in the make dir
+                    package_list = glob.glob(os.path.join(software_dir,"*.package")) 
+
+                    # flag that tells if we have deliverance to perform the make package_install
+                    install_deliverance = True
+                    
+                    for package_dir in package_list:
+                        package_dir_name = os.path.basename(package_dir) # this contains just, for example, foo-1.0.0.package
+
+                        if _packageExists(os.path.join(absolute_install_dir, package_dir_name)):
+                            if _packagesEqual(os.path.join(absolute_install_dir, package_dir_name), os.path.join(software_dir, package_dir_name)):
+                                error_msg = colored("WARN", YELLOW)+ " : "+package_dir_name+" already found in install dir, but they result equal. not overwritten"
+                                install_deliverance = False
+                                break
+                            else:
+                                error_msg = colored("FAIL", RED)+ " : "+package_dir_name+" already found in install dir, and they are different! not overwritten"
+                                install_deliverance = False
+                                break
+
+                    if install_deliverance or self.__force_overwrite:
+                        _makePackageInstall(software_dir, absolute_install_dir)
+                    else:
+                        print error_msg
+           
+        package_list_file.close()
+
+   
+    def setBuildOnly(self,build_only):
+        """
+        Set to only build the packages in the directory they are.
+        Packages are not copied in the install location
+        """
+        self.__build_only = build_only
+    def setForceOverwrite(self, force_overwrite):
+        """
+        Forces the overwriting of the packages even if differences are found between the created
+        package and the currently installed one
+        """
+        self.__force_overwrite = force_overwrite
+    def setInstallDir(self, install_dir):
+        """
+        Sets the install dir
+        """
+        self.__install_dir = install_dir
+    def buildNutz(self, build_nutz):
+        """
+        Set if to build nutz or packages
+        """
+        self.__build_nutz = build_nutz
+    
+def _makePackageInstall(software_dir, install_dir):
+    """
+    private function. Invokes make package-install after changing working directory to
+    software_dir. The PREFIX parameter is set to a proper install dir.
+    The function does not return anything.
+    """
+    try:
+        os.chdir(software_dir)
+    except:
+        print (colored("FAIL", RED)+"  : unable to chdir to "+software_dir)
+        return
+
+    makefile = os.path.join(software_dir,"Makefile")
+    if os.access(makefile, os.R_OK):
+        ret = os.system("make package-install PREFIX="+install_dir+" >/dev/null 2>&1")
+        if ret != 0:
+            print(colored("FAIL", RED)+" : install of "+software_dir+" failed with code "+str(ret))
+        else:
+            print(colored("OK", GREEN)+"   : install of "+software_dir)
+    else:
+        print(colored("FAIL",RED) + " : install of "+software_dir+" failed. Unable to access makefile")
+   
+def _makeNutzInstall(software_dir, install_dir):
+    """
+    private function. Invokes make nutz-install after changing working directory to
+    software_dir. The PREFIX parameter is set to a proper install dir.
+    The function does not return anything.
+    """
+    try:
+        os.chdir(software_dir)
+    except:
+        print (colored("FAIL", RED)+"  : unable to chdir to "+software_dir)
+        return
+
+    makefile = os.path.join(software_dir,"Makefile")
+    if os.access(makefile, os.R_OK):
+        ret = os.system("make nutz-install PREFIX="+install_dir+" >/dev/null 2>&1")
+        if ret != 0:
+            print(colored("FAIL", RED)+" : install of "+software_dir+" failed with code "+str(ret))
+        else:
+            print(colored("OK", GREEN)+"   : install of "+software_dir)
+    else:
+        print(colored("FAIL",RED) + " : install of "+software_dir+" failed. Unable to access makefile")
+     
+def _makePackage(software_dir):
+    """
+    private function. Invokes make package after changing working directory to
+    software_dir. The PREFIX parameter is set to a proper install dir.
+    The function does not return anything.
+    """
+    try:
+        os.chdir(software_dir)
+    except:
+        print (colored("FAIL", RED)+"  : unable to chdir to "+software_dir)
+        return
+    makefile = os.path.join(software_dir,"Makefile")
+    if os.access(makefile, os.R_OK):
+        ret = os.system("make package >/dev/null 2>&1")
+        if ret != 0:
+            print(colored("FAIL", RED)+" : build of "+software_dir+" failed with code "+str(ret))
+        else:
+            print(colored("OK", GREEN)+"   : build of "+software_dir)
+    else:
+        print(colored("FAIL",RED) + " : build of "+software_dir+" failed. Unable to access makefile")
+
+def _makeNutz(software_dir):
+    """
+    private function. Invokes make nutz after changing working directory to
+    software_dir. The PREFIX parameter is set to a proper install dir.
+    The function does not return anything.
+    """
+    try:
+        os.chdir(software_dir)
+    except:
+        print (colored("FAIL", RED)+"  : unable to chdir to "+software_dir)
+        return
+    makefile = os.path.join(software_dir,"Makefile")
+    if os.access(makefile, os.R_OK):
+        ret = os.system("make nutz >/dev/null 2>&1")
+        if ret != 0:
+            print(colored("FAIL", RED)+" : build of "+software_dir+" failed with code "+str(ret))
+        else:
+            print(colored("OK", GREEN)+"   : build of "+software_dir)
+    else:
+        print(colored("FAIL",RED) + " : build of "+software_dir+" failed. Unable to access makefile")
+   
+def _makeClean(software_dir):
+    """
+    private function. Invokes make package-clean after changing working directory to
+    software_dir. The PREFIX parameter is set to a proper install dir.
+    The function does not return anything.
+    """
+    try:
+        os.chdir(software_dir)
+    except:
+        print (colored("FAIL", RED)+"  : unable to chdir to "+software_dir)
+        return
+    makefile = os.path.join(software_dir,"Makefile")
+    if os.access(makefile, os.R_OK):
+        ret = os.system("make clean >/dev/null 2>&1")
+        if ret != 0:
+            print(colored("FAIL", RED)+" : clean of "+software_dir+" failed with code "+str(ret))
+        else:
+            print(colored("OK", GREEN)+"   : clean of "+software_dir)
+    else:
+        print(colored("FAIL",RED) + " : clean of "+software_dir+" failed. Unable to access makefile")
+
+def _packageExists(package_dir):
+    """
+    Checks if a package exists in the specified package_dir.
+    The check is not very strict. The pure existence of the directory is
+    considered suspicious of being present.
+    """
+    if os.access(package_dir, os.R_OK) and os.path.isdir(package_dir):
+        return True
+    return False
+
+
+def _packagesEqual(path1, path2):
+    """
+    Checks if two package trees are equal
+    """
+    comparison = filecmp.dircmp(path1, path2) 
+    return _checkComparisonObject(comparison)
+ 
+def _checkComparisonObject(comparison):
+    """
+    Recursively invoked function to handle the filecmp.dircmp object design.
+    """
+    if len(comparison.left_only) != 0 or len(comparison.right_only) != 0 or len(comparison.diff_files):
+        return False
+
+    for dir in comparison.subdirs.itervalues():
+        if _checkComparisonObject(dir) == False:
+            return False
+        
+    return True
+        
+
+def main(argv):
+
+    options, args=getopt.getopt(sys.argv[1:], "bd:fhn", ["build_only","install_dir=", "force_overwrite", "help","nutz"])
+
+    build_only=False
+    install_dir = None
+    force_overwrite = False
+    build_nutz = False
+    for opt in options:
+        if opt[0] == "-b" or opt[0] == "--build_only":
+            build_only=True
+        if opt[0] == "-d" or opt[0] == "--install_dir":
+            install_dir = opt[1]
+        if opt[0] == "-f" or opt[0] == "--force_overwrite":
+            force_overwrite = True
+        if opt[0] == "-h" or opt[0] == "--help":
+            usage()
+            sys.exit(1)
+        if opt[0] == "-n" or opt[0] == "--nutz":
+            build_nutz=True
+    
+    if len(args) != 1:
+        usage()
+        sys.exit(1)
+    package_list_file = args[0]
+
+    releaser = PackageReleaser()
+    releaser.setBuildOnly(build_only)
+    releaser.setForceOverwrite(force_overwrite)
+    releaser.setInstallDir(install_dir)
+    releaser.buildNutz(build_nutz)
+    releaser.run(package_list_file)
+
+
+if __name__ == "__main__":
+    main(sys.argv)
